@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 This file has crappy text.
+=======
+This file has some text.
+>>>>>>> 941bc6e7c51cde7ba40746533e92f37ac2517a0d
