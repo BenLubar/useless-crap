@@ -69,6 +69,7 @@
 		if (!input || !result || !language_data) {
 			return;
 		}
+		location.hash = input.value;
 		result.innerHTML = '';
 		search(result, camxes.parse(input.value));
 	}
@@ -76,6 +77,10 @@
 	document.addEventListener('DOMContentLoaded', function() {
 		input = document.getElementById('input');
 		result = document.getElementById('result');
+
+		if (location.hash) {
+			input.value = decodeURIComponent(location.hash.substring(1));
+		}
 
 		input.addEventListener('change', update);
 		update();
