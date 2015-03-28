@@ -1,0 +1,29 @@
+@import url(http://fonts.googleapis.com/css?family=Noto+Sans);
+
+body, input, textarea, button {
+	font: 18px 'Noto Sans', sans-serif;
+}
+
+#input, #result {
+	width: 80%;
+	min-width: 450px;
+	max-width: 800px;
+	margin: auto;
+	display: block;
+}
+
+#result .selbri:before {
+	content: '[is/does] ';
+}
+
+#result .text_part_2>.indicators:before {
+	content: '[I feel] ';
+}
+
+#result .text_part_2>.indicators:after {
+	content: '[because] ';
+}
+
+#result .post_clause .indicators:before {
+	content: '[the preceeding word causes me to feel] ';
+}
