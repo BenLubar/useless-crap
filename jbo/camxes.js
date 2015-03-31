@@ -55258,3 +55258,7 @@ var camxes = (function(){
   
   return result;
 })()
+
+if (typeof exports !== 'undefined' && typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+	module.exports = camxes;
+}
