@@ -20,7 +20,7 @@ var cribe = ".ni'oni'o lu loi guzmrkukurbita cu fadni le ka go'o lo'i mivmu'e li
 	"\n" +
 	".i lu ko mo'ine'i klama li'u se cusku ko'e .icabo ko'e klagau le lanzu le zdani\n" +
 	"\n" +
-	".iku'i mycy na'e cazi nerkla .i ri ze'iku sanli le serti gi'eve'uvi'a catlu la ribgu'e\n" +
+	".iku'i mycy na'e cazi nerkla .i ri ze'iku sanli le serti gi'e catlu la ribgu'e ne vi'a ve'u\n" + // Due to a bug in camxes, this line has been changed from its original form. It has been modified to fit your TV.
 	"\n" +
 	".i mijycritu .iseni'i le donri ca'o jdika .i la rolcesydei puzu mulno .i ro la cribe baza pensi la xrismas .i ku'i ba'e caku la ribgu'e cu se gusni fi le nunsolcanci .i ko'i goi le jundi selkurji cange be fi la ben po'u lo cagypre zi'e goi by cu simlu lo ka steci melbi .iki'u lo bakfu be lo sudysrasu ku joi lo derxi be lo zumri ku joi lo guzme tu'i ko'i cu gasnu lo clani ctino\n" +
 	"\n" +
