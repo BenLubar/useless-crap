@@ -124,4 +124,5 @@ var cribe = ".ni'oni'o lu loi guzmrkukurbita cu fadni le ka go'o lo'i mivmu'e li
 
 var bears = fanva.toEnglish(cribe);
 
-console.log(bears);
+console.log(bears.toString(true));
+console.log(bears.toString());

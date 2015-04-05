@@ -304,6 +304,14 @@ var fanva = function(camxes) {
 			this.description = "[logically quantified existential pro-sumti: there exists something 3 (usually restricted)]";
 			this.simple = "Z";
 			break;
+		case "do":
+			this.description = "[you, the listener(s)]";
+			this.simple = "you";
+			break;
+		case "mi":
+			this.description = "[I/we, the speaker(s)]";
+			this.simple = "me";
+			break;
 		default:
 			throw "unrecognized KOhA: " + word;
 		}
@@ -857,11 +865,11 @@ var fanva = function(camxes) {
 			if (args.length === 1 && args[0].constructor === English_bridi) {
 				return args[0];
 			}
-			if (args.length === 2 && Object.prototype.toString.call(args[0]) === "[object Array]" && args[1].constructor === English_bridi) {
-				if (args[0].length > 0 && args[0][args[0].length - 1].constructor === English_CU) {
-					args[0].pop();
+			if (args.length === 2 && args[0].length === 1 && args[0][0].constructor === English_terms && args[1].constructor === English_bridi) {
+				if (args[0][0].terms[args[0][0].terms.length - 1].constructor === English_CU) {
+					args[0][0].terms.pop();
 				}
-				args[1].terms = args[0].concat(args[1].terms.slice(1));
+				args[1].terms = args[0][0].terms.concat(args[1].terms.slice(1));
 				return args[1];
 			}
 			throw "internal error";
@@ -909,7 +917,7 @@ var fanva = function(camxes) {
 
 	return {
 		toEnglish: function(text) {
-			return to(English, camxes.parse(text)).toString();
+			return to(English, camxes.parse(text));
 		}
 	};
 }(typeof require === "function" ? require("./camxes.js") : this.camxes);
