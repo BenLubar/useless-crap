@@ -1,6 +1,14 @@
 <html>
 <head>
 	<title>Guild Wars 2 maps by continent and floor</title>
+	<style>
+		table {
+			border-spacing: 0;
+		}
+		td {
+			padding: 0;
+		}
+	</style>
 </head>
 <body>
 <script>
@@ -42,7 +50,6 @@ xhr.onload = function() {
 				button.textContent = "Load";
 				button.onclick = function() {
 					var table = document.createElement("table");
-					table.style.borderSpacing = 0;
 					for (var y = y0; y < y1; y++) {
 						var tr = document.createElement("tr");
 						for (var x = x0; x < x1; x++) {
