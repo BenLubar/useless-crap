@@ -58,6 +58,11 @@ xhr.onload = function() {
 									var img = document.createElement("img");
 									img.width = w;
 									img.height = h;
+									img.onerror = function(td, img) {
+										return function() {
+											td.removeChild(img);
+										};
+									}(td, img);
 									img.src = "https://tiles.guildwars2.com/" + continent.id + "/" + floor.id + "/" + continent.max_zoom + "/" + x + "/" + y + ".jpg";
 									td.appendChild(img);
 									tr.appendChild(td);
