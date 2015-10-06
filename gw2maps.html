@@ -44,7 +44,9 @@ xhr.onload = function() {
 						var x1 = Math.ceil(map.continent_rect[1][0] / w);
 						var y1 = Math.ceil(map.continent_rect[1][1] / h);
 						var header = document.createElement("h2");
-						header.innerText = region.name + " (" + map.name + ")";
+						header.innerText = region.name + " (" + map.name + " - " + Object.keys(map.sectors).map(function(id) {
+							return map.sectors[id].name;
+						}).join(" / ") + ")";
 						div.appendChild(header);
 
 						var button = document.createElement("button");
