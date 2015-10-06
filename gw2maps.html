@@ -14,6 +14,9 @@ xhr.onload = function() {
 		var w = continent.continent_dims[0] >> continent.max_zoom;
 		var h = continent.continent_dims[1] >> continent.max_zoom;
 
+		var div = document.createElement("div");
+		document.appendChild(div);
+
 		var xhr = new XMLHttpRequest();
 		xhr.open("GET", "https://api.guildwars2.com/v2/continents/" + continent.id + "/floors?ids=all", true);
 		xhr.onload = function() {
@@ -33,13 +36,13 @@ xhr.onload = function() {
 
 				var number = document.createElement("h2");
 				number.innerText = "Floor " + floor.id;
-				document.body.appendChild(number);
+				div.appendChild(number);
 
 				var button = document.createElement("button");
 				button.textContent = "Load";
 				button.onclick = function() {
 					var table = document.createElement("table");
-					table.setAttribute("border", 0);
+					table.style.borderSpacing = 0;
 					for (var y = y0; y < y1; y++) {
 						var tr = document.createElement("tr");
 						for (var x = x0; x < x1; x++) {
@@ -53,9 +56,9 @@ xhr.onload = function() {
 						}
 						table.appendChild(tr);
 					}
-					document.body.replaceChild(table, button);
+					div.replaceChild(table, button);
 				};
-				document.body.appendChild(button);
+				div.appendChild(button);
 			});
 		};
 		xhr.send();
