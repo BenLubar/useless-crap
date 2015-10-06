@@ -33,39 +33,42 @@ xhr.onload = function() {
 				return a.id - b.id;
 			});
 			floors.forEach(function(floor) {
-				var x0 = 0, y0 = 0;
-				var x1 = 1 << continent.max_zoom, y1 = 1 << continent.max_zoom;
-				if (floor.clamped_view) {
-					x0 = Math.floor(floor.clamped_view[0][0] / w);
-					y0 = Math.floor(floor.clamped_view[0][1] / h);
-					x1 = Math.ceil(floor.clamped_view[1][0] / w);
-					y1 = Math.ceil(floor.clamped_view[1][1] / h);
-				};
+				Object.keys(floor.regions).forEach(function(regionid) {
+					var region = floor.regions[regionid];
 
-				var number = document.createElement("h2");
-				number.innerText = "Floor " + floor.id;
-				div.appendChild(number);
+					Object.keys(region.maps).forEach(function(mapid) {
+						var map = region.maps[mapid];
 
-				var button = document.createElement("button");
-				button.textContent = "Load";
-				button.onclick = function() {
-					var table = document.createElement("table");
-					for (var y = y0; y < y1; y++) {
-						var tr = document.createElement("tr");
-						for (var x = x0; x < x1; x++) {
-							var td = document.createElement("td");
-							var img = document.createElement("img");
-							img.width = w;
-							img.height = h;
-							img.src = "https://tiles.guildwars2.com/" + continent.id + "/" + floor.id + "/" + continent.max_zoom + "/" + x + "/" + y + ".jpg";
-							td.appendChild(img);
-							tr.appendChild(td);
-						}
-						table.appendChild(tr);
-					}
-					div.replaceChild(table, button);
-				};
-				div.appendChild(button);
+						var x0 = Math.floor(map.continent_rect[0][0] / w);
+						var y0 = Math.floor(map.continent_rect[0][1] / h);
+						var x1 = Math.ceil(map.continent_rect[1][0] / w);
+						var y1 = Math.ceil(map.continent_rect[1][1] / h);
+						var header = document.createElement("h2");
+						header.innerText = region.name + " (" + map.name + ")";
+						div.appendChild(header);
+
+						var button = document.createElement("button");
+						button.textContent = "Load";
+						button.onclick = function() {
+							var table = document.createElement("table");
+							for (var y = y0; y < y1; y++) {
+								var tr = document.createElement("tr");
+								for (var x = x0; x < x1; x++) {
+									var td = document.createElement("td");
+									var img = document.createElement("img");
+									img.width = w;
+									img.height = h;
+									img.src = "https://tiles.guildwars2.com/" + continent.id + "/" + floor.id + "/" + continent.max_zoom + "/" + x + "/" + y + ".jpg";
+									td.appendChild(img);
+									tr.appendChild(td);
+								}
+								table.appendChild(tr);
+							}
+							div.replaceChild(table, button);
+						};
+						div.appendChild(button);
+					});
+				});
 			});
 		};
 		xhr.send();
