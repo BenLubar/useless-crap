@@ -15,7 +15,7 @@ xhr.onload = function() {
 		var h = continent.continent_dims[1] >> continent.max_zoom;
 
 		var div = document.createElement("div");
-		document.appendChild(div);
+		document.body.appendChild(div);
 
 		var xhr = new XMLHttpRequest();
 		xhr.open("GET", "https://api.guildwars2.com/v2/continents/" + continent.id + "/floors?ids=all", true);
