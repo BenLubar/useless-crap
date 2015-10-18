@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Guild Wars 2 Trading Post Desktop Notifications</title>
+</head>
+<body>
+<script>
+var access_token = location.search ? location.search.substr(1) : function() {
+	var key = prompt('What is your API key? (https://account.arena.net/applications)', '');
+	if (key === null) {
+		location = 'https://account.arena.net/applications';
+		throw "no key, no TP";
+	}
+	location.search = key;
+	return key;
+}();
+
+var cache = JSON.parse(localStorage['gw2tp_' + access_token] || '{}');
+
+window.onbeforeunload = function() {
+	localStorage['gw2tp_' + access_token] = JSON.stringify(cache);
+};
+
+function get(url) {
+	return new Promise(function(resolve, reject) {
+		var xhr = new XMLHttpRequest();
+		xhr.open('GET', url);
+		xhr.onload = function() {
+			if (xhr.status == 200) {
+				resolve({
+					'body': JSON.parse(xhr.responseText),
+					'header': function(name) {
+						return xhr.getResponseHeader(name);
+					}
+				});
+			} else {
+				reject(xhr.statusText + '\n' + xhr.responseText);
+			}
+		};
+		xhr.onerror = function() {
+			reject(xhr.statusText);
+		};
+		xhr.send();
+	});
+}
+
+function delayGet(ms, url) {
+	return new Promise(function(resolve, reject) {
+		setTimeout(function() {
+			get(url).then(resolve, reject);
+		}, ms);
+	});
+}
+
+cache.entries = cache.entries || {};
+cache.items = cache.items || {};
+var itemQueue = [];
+
+function addEntry(entry) {
+	if (entry.id in cache.entries) {
+		return;
+	}
+	cache.entries[entry.id] = entry;
+	if (entry.item_id in cache.items) {
+		onEntry(entry, cache.items[entry.item_id]);
+		return;
+	}
+	itemQueue.push({
+		'id': entry.item_id,
+		'callback': function(item) {
+			onEntry(entry, item);
+		}
+	});
+}
+
+function onEntry(entry, item) {
+	if (new Date() - new Date(entry.purchased) < 60 * 60 * 1000) {
+		var n = new Notification('Sold: ' + entry.quantity + '× ' + item.name, {
+			'icon': item.icon
+		});
+		setTimeout(function() {
+			n.close();
+		}, 10 * 1000);
+	}
+}
+
+function flushItemQueue() {
+	if (itemQueue.length == 0) {
+		return;
+	}
+	var callbacks = {};
+	itemQueue.forEach(function(queue) {
+		callbacks[queue.id] = callbacks[queue.id] || [];
+		callbacks[queue.id].push(queue.callback);
+	});
+	itemQueue = [];
+	return get('https://api.guildwars2.com/v2/items?ids=' + Object.keys(callbacks).join(',')).then(function(data) {
+		data.body.forEach(function(item) {
+			cache.items[item.id] = item;
+			callbacks[item.id].forEach(function(cb) {
+				cb(item);
+			});
+		});
+	});
+}
+Notification.requestPermission(function(permission) {
+	if (permission != 'granted') {
+		return;
+	}
+	function handle(data) {
+		if (data.body.some(function(entry) {
+			return entry.id in cache.entries;
+		})) {
+			data.body.forEach(addEntry);
+			return flushItemQueue();
+		}
+
+		var p = Promise.resolve(undefined);
+		for (var i = data.header("X-Page-Total") - 1; i >= 0; i--) {
+			p = p.then(function(i) {
+				return function() {
+					return get('https://api.guildwars2.com/v2/commerce/transactions/history/sells?page=' + i + '&access_token=' + access_token).then(function(data) {
+						data.body.forEach(addEntry);
+					}).then(flushItemQueue);
+				};
+			}(i));
+		}
+	}
+	const url = 'https://api.guildwars2.com/v2/commerce/transactions/history/sells?access_token=' + access_token;
+	get(url).then(handle).then(function repeat() {
+		return delayGet(60 * 1000, url).then(handle).then(repeat);
+	}).catch(function(err) {
+		throw err;
+	});
+});
+</script>
+</body>
