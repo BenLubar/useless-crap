@@ -114,14 +114,14 @@ function doEntry(entry) {
 	row.appendChild(itemCell);
 
 	var priceCell = document.createElement('td');
-	if (entry.price > 100 * 100) {
+	if (entry.price >= 100 * 100) {
 		priceCell.appendChild(document.createTextNode(Math.floor(entry.price / 100 / 100)));
 		var icon = document.createElement('span');
 		icon.className = 'ui_coin_gold';
 		icon.textContent = 'g';
 		priceCell.appendChild(icon);
 	}
-	if (entry.price > 100) {
+	if (entry.price >= 100) {
 		priceCell.appendChild(document.createTextNode(Math.floor(entry.price / 100) % 100));
 		var icon = document.createElement('span');
 		icon.className = 'ui_coin_silver';
