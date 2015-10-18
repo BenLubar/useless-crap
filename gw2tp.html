@@ -59,7 +59,7 @@ cache.entries = cache.entries || {};
 cache.items = cache.items || {};
 var itemQueue = [];
 
-Object.keys(cache.entries).map(parseInt).sort().forEach(function(id) {
+Object.keys(cache.entries).sort().forEach(function(id) {
 	doEntry(cache.entries[id]);
 });
 
