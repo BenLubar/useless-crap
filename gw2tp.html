@@ -75,12 +75,9 @@ function addEntry(entry) {
 
 function onEntry(entry, item) {
 	if (new Date() - new Date(entry.purchased) < 60 * 60 * 1000) {
-		var n = new Notification('Sold: ' + entry.quantity + '× ' + item.name, {
+		new Notification('Sold: ' + entry.quantity + '× ' + item.name, {
 			'icon': item.icon
 		});
-		setTimeout(function() {
-			n.close();
-		}, 10 * 1000);
 	}
 }
 
