@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<meta charset="utf-8">
 	<title>Guild Wars 2 Trading Post Desktop Notifications</title>
 	<style>
 		@import url(https://d1h9a8s8eodvjz.cloudfront.net/fonts/menomonia/08-02-12/menomonia.css);
@@ -200,11 +201,14 @@ function onEntry(entry, item, cell) {
 		};
 	}
 	cell.textContent = '';
+	var link = document.createElement('a');
+	link.href = 'https://www.gw2spidy.com/item/' + item.id;
 	var img = document.createElement('img');
 	img.src = item.icon;
 	img.alt = '';
 	img.className = 'item-icon item-rarity-' + item.rarity;
-	cell.appendChild(img);
+	link.appendChild(img);
+	cell.appendChild(link);
 	cell.appendChild(document.createTextNode(' ' + item.name));
 }
 
