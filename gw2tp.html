@@ -14,6 +14,32 @@
 			width: 24px;
 			height: 24px;
 			vertical-align: middle;
+			background-color: #000;
+			border: 1px solid;
+		}
+		.item-rarity-Junk {
+			border-color: #aaa;
+		}
+		.item-rarity-Basic {
+			border-color: #000;
+		}
+		.item-rarity-Fine {
+			border-color: #62a4da;
+		}
+		.item-rarity-Masterwork {
+			border-color: #1a9306;
+		}
+		.item-rarity-Rare {
+			border-color: #fcd00b;
+		}
+		.item-rarity-Exotic {
+			border-color: #ffa405;
+		}
+		.item-rarity-Ascended {
+			border-color: #fb3e8d;
+		}
+		.item-rarity-Legendary {
+			border-color: #4c139d;
 		}
 		.ui_coin_gold, .ui_coin_silver, .ui_coin_copper {
 			width: 12px;
@@ -26,7 +52,7 @@
 	</style>
 </head>
 <body>
-<table id="tp"><tbody></tbody></table>
+<table id="tp"><thead><tr><th>Qty</th><th>Item</th><th>Price</th><th>Listed</th><th>Sold</th></tr></thead><tbody></tbody></table>
 <script>
 var access_token = location.search ? location.search.substr(1) : function() {
 	var key = prompt('What is your API key? (https://account.arena.net/applications)', '');
@@ -136,11 +162,17 @@ function doEntry(entry) {
 	row.appendChild(priceCell);
 
 	var createdCell = document.createElement('td');
-	createdCell.textContent = entry.created;
+	createdCell.textContent = '???';
+	createdCell.setAttribute('data-timestamp', +new Date(entry.created));
+	createdCell.title = entry.created;
+	createdCell.className = 'time-new';
 	row.appendChild(createdCell);
 
 	var purchasedCell = document.createElement('td');
-	purchasedCell.textContent = entry.purchased;
+	purchasedCell.textContent = '???';
+	purchasedCell.setAttribute('data-timestamp', +new Date(entry.purchased));
+	purchasedCell.title = entry.purchased;
+	purchasedCell.className = 'time-new';
 	row.appendChild(purchasedCell);
 
 	table.insertBefore(row, table.firstChild);
@@ -171,12 +203,39 @@ function onEntry(entry, item, cell) {
 	var img = document.createElement('img');
 	img.src = item.icon;
 	img.alt = '';
-	img.className = 'item-icon';
+	img.className = 'item-icon item-rarity-' + item.rarity;
 	cell.appendChild(img);
 	cell.appendChild(document.createTextNode(' ' + item.name));
 }
 
+function updateTime(el) {
+	var diff = +new Date() - el.getAttribute('data-timestamp');
+	if (diff <= 60 * 1000) {
+		el.textContent = 'just now';
+		el.className = 'time-minute';
+	} else if (diff <= 60 * 60 * 1000) {
+		el.textContent = Math.ceil(diff / 60 / 1000) + ' minutes ago';
+		el.className = 'time-minute';
+	} else if (diff <= 48 * 60 * 60 * 1000) {
+		el.textContent = Math.ceil(diff / 60 / 60 / 1000) + ' hours ago';
+		el.className = 'time-hour';
+	} else {
+		var d = new Date(+el.getAttribute('data-timestamp'));
+		el.textContent = d.getDate() + ' ' + ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][d.getMonth()];
+		el.className = 'time-day';
+	}
+}
+
+setInterval(function() {
+	[].forEach.call(document.querySelectorAll('.time-minute'), updateTime);
+}, 60 * 1000);
+
+setInterval(function() {
+	[].forEach.call(document.querySelectorAll('.time-hour'), updateTime);
+}, 5 * 60 * 1000);
+
 function flushItemQueue() {
+	[].forEach.call(document.querySelectorAll('.time-new'), updateTime);
 	if (itemQueue.length == 0) {
 		return;
 	}
