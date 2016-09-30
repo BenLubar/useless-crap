@@ -5323,8 +5323,9 @@
 					} else if (goal.getAttribute('data-achievement-bit')) {
 						var achievement = data.achievement[goal.parentNode.parentNode.parentNode.parentNode.querySelector("a > progress").getAttribute('data-achievement-goal')];
 						goal.max = 1;
-						if (achievement) {
-							goal.value = achievement.bits.indexOf(+goal.getAttribute('data-achievement-bit')) === -1 ? 0 : 1;
+						if (achievement && achievement.bits.indexOf(+goal.getAttribute('data-achievement-bit')) !== -1) {
+							goal.value = 1;
+							goal.parentNode.parentNode.classList.add('complete');
 						} else {
 							goal.value = 0;
 						}
