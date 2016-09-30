@@ -5261,6 +5261,14 @@
 		</ul>
 	</details>
 
+<script>
+if (location.query === "?debug") {
+	window.onerror = function(message, source, lineno, colno, error) {
+		alert(lineno + ':' + colno + ':' + message);
+	};
+}
+</script>
+
 	<script>
 (function() {
 	var apiKey = "806A2E66-D870-8E4F-BF35-840D64723775629D5348-A87D-4D4D-A90B-7BB3426B395C";
