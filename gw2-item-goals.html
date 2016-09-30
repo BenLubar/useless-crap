@@ -5295,9 +5295,9 @@ if (location.search === "?debug") {
 			return;
 		}
 
-		document.querySelectorAll("body > details").forEach(function(details) {
+		[].slice.call(document.querySelectorAll("body > details")).forEach(function(details) {
 			for (var selector = "body > details > ul > li:not(.complete) > a"; ; selector += " + ul > li:not(.complete) > a") {
-				var elements = details.querySelectorAll(selector + " > progress");
+				var elements = [].slice.call(details.querySelectorAll(selector + " > progress"));
 				if (!elements.length) {
 					break;
 				}
@@ -5353,7 +5353,7 @@ if (location.search === "?debug") {
 			var list = document.createElement('dl');
 			var rawMaterials = {};
 			['item', 'currency'].forEach(function(type) {
-				details.querySelectorAll('[data-' + type + '-goal]').forEach(function(g) {
+				[].slice.call(details.querySelectorAll('[data-' + type + '-goal]')).forEach(function(g) {
 					var id = g.getAttribute('data-' + type + '-goal');
 
 					if (rawMaterials[type + ':' + id])
