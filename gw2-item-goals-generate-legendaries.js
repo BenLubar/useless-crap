@@ -63,7 +63,7 @@ function getRealRecipesByOutput(itemID, callback) {
 	});
 }
 
-var output = ['<!DOCTYPE html>\n<html>\n<head>\n\t<title>GW2 Legendary Item Goals</title>\n\t<style>\n\t\timg {\n\t\t\twidth: 24px;\n\t\t\theight: 24px;\n\t\t\tvertical-align: middle;\n\t\t}\n\t\ta {\n\t\t\ttext-decoration: none;\n\t\t}\n\t\t.complete ul {\n\t\t\tdisplay: none;\n\t\t}\n\t\tsummary h1 {\n\t\t\tdisplay: inline-block;\n\t\t}\n\t</style>\n</head>\n<body>'];
+var output = ['<!DOCTYPE html>\n<html>\n<head>\n\t<title>GW2 Legendary Item Goals</title>\n\t<link rel="stylesheet" href="gw2-item-goals.css">\n</head>\n<body>'];
 
 request('http://gw2profits.com/json/v3', function(err, forgeRecipes) {
 	if (err) {

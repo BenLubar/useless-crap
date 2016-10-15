@@ -1,0 +1,37 @@
+img {
+	width: 24px;
+	height: 24px;
+	vertical-align: middle;
+}
+a {
+	text-decoration: none;
+}
+.complete ul {
+	display: none;
+}
+summary h1 {
+	display: inline-block;
+}
+.fractal-25 {
+	font-size: 0;
+}
+.fractal-25 > li {
+	display: inline;
+	font-size: 1rem;
+}
+.fractal-25 > li > a > progress {
+	width: 1em;
+	margin-right: -1px;
+}
+progress:after {
+	content: attr(value) ' / ' attr(max);
+	text-align: center;
+	color: #333;
+	font: 0.75rem sans-serif;
+	width: 100%;
+	display: inline-block;
+	vertical-align: 0.125rem;
+}
+.fractal-25 > li > a > progress:after {
+	content: '';
+}
