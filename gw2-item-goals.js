@@ -39,7 +39,8 @@ if (location.search === "?debug") {
 				elements.forEach(function(goal) {
 					if (goal.parentNode.parentNode.parentNode.parentNode.parentNode !== document.body) {
 						var parent = goal.parentNode.parentNode.parentNode.parentNode.querySelector("a > progress");
-						goal.max *= parent.max - parent.value;
+						var batch = goal.parentNode.parentNode.parentNode.getAttribute('data-batch-size') || 1;
+						goal.max = (goal.max * Math.ceil((parent.max - parent.value) / batch) * batch).toString();
 					}
 
 					if (goal.getAttribute('data-item-goal')) {

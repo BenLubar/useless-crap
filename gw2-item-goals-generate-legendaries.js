@@ -72,17 +72,38 @@ request('http://gw2profits.com/json/v3', function(err, forgeRecipes) {
 
 	var fakeRecipes = {};
 	forgeRecipes.forEach(function(r) {
+		// Don't allow salvage recipes with more than one item output (snowflakes)
 		if (r.output_item_count_range || (r.output_item_count !== 1 && r.disciplines[0] === 'Salvage')) {
 			return;
 		}
-
+		// Don't allow recipes with the output as one of the ingredients (bloodstone dust)
 		if (r.ingredients.some(function(i) { return i.item_id === r.output_item_id; })) {
+			return;
+		}
+		// Don't allow amalgamated gemstone or legendary tribute recipes (treat them as base items)
+		if (r.output_item_id === 68063 || r.output_item_id === 79453) {
 			return;
 		}
 
 		fakeRecipes[r.output_item_id] = fakeRecipes[r.output_item_id] || [];
 		fakeRecipes[r.output_item_id].push(r);
 	});
+	for (var id in fakeRecipes) {
+		if (fakeRecipes.hasOwnProperty(id)) {
+			// Prefer recipes with smaller outputs
+			fakeRecipes[id].sort(function(a, b) {
+				return a.output_item_count - b.output_item_count;
+			});
+		}
+	}
+	// We only want the karma recipe for obsidian shards
+	fakeRecipes[19925] = fakeRecipes[19925].filter(function(r) {
+		return r.output_item_count === 1 && r.ingredients.length === 1 && r.ingredients[0].item_id === -2;
+	});
+	// Hotfix: Gift of Gliding has ley line crystals listed twice instead of aurilium
+	fakeRecipes[71311][0].ingredients[0].item_id = -19;
+	fakeRecipes[71311][0].ingredients[1].item_id = -22;
+	fakeRecipes[71311][0].ingredients[2].item_id = -20;
 
 	var getRecipesFor = function(itemID, callback) {
 		getRealRecipesByOutput(itemID, function(err, realRecipeIDs) {
@@ -115,7 +136,13 @@ request('http://gw2profits.com/json/v3', function(err, forgeRecipes) {
 		var ingredients = recipe.ingredients.slice(0);
 
 		output.push(indent);
-		output.push('<ul>');
+		if (recipe.output_item_count !== 1) {
+			output.push('<ul data-batch-size="');
+			output.push(recipe.output_item_count);
+			output.push('">');
+		} else {
+			output.push('<ul>');
+		}
 		var nextIndent = indent + '\t';
 		function next() {
 			if (ingredients.length === 0) {
@@ -184,12 +211,20 @@ request('http://gw2profits.com/json/v3', function(err, forgeRecipes) {
 				var item = items[0];
 				var recipe = recipes[0];
 
+				if (customGoal && item.description && (item.description === 'Salvage this weapon to receive its spirit, needed to craft the next tier of this legendary precursor.' || item.description.indexOf('"<c=@flavor>This weapon is used to craft the legendary ') === 0)) {
+					// Skip precursors in the next precursor's collection.
+					return done();
+				}
 				if (recipe && recipe.achievement_id && item.flags.indexOf('AccountBound') === -1) {
 					// assume achievements that reward tradable items are incorrect (see: glob of ectoplasm)
 					recipe = null;
 				}
 				if (recipe && recipe.disciplines[0] === 'Mystic Forge' && item.type === 'CraftingMaterial' && item.rarity === 'Ascended') {
 					// assume mystic forge on ascended items is incorrect (see: condensed/coagulated/crystallized mists essence)
+					recipe = null;
+				}
+				if (recipe && recipe.disciplines[0] === 'Mystic Forge' && item.flags.indexOf('AccountBound') === -1) {
+					// assume mystic forge that results in tradable items are incorrect (see: lodestone from slivers)
 					recipe = null;
 				}
 
@@ -304,6 +339,7 @@ request('http://gw2profits.com/json/v3', function(err, forgeRecipes) {
 					output.push('\n\t\t\t</li>\n\t\t</ul>\n\t\t<a name="');
 					output.push(liID);
 					output.push('_remaining"></a>\n\t</details>\n');
+					console.log('finished: ' + legendaryItem.name);
 					next();
 				});
 			});
