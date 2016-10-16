@@ -30,17 +30,13 @@ if (location.search === "?debug") {
 		}
 
 		[].slice.call(document.querySelectorAll("body > details")).forEach(function(details) {
-			for (var selector = "body > details > ul > li:not(.complete) > a"; ; selector += " + ul > li:not(.complete) > a") {
-				var elements = [].slice.call(details.querySelectorAll(selector + " > progress"));
-				if (!elements.length) {
-					break;
-				}
-
-				elements.forEach(function(goal) {
-					if (goal.parentNode.parentNode.parentNode.parentNode.parentNode !== document.body) {
-						var parent = goal.parentNode.parentNode.parentNode.parentNode.querySelector("a > progress");
+			function recurse(parent, selector) {
+				[].slice.call(parent.querySelectorAll(selector + " > progress")).forEach(function(goal) {
+					if (parent !== details) {
+						var parentProgress = parent.querySelector("a > progress");
 						var batch = goal.parentNode.parentNode.parentNode.getAttribute('data-batch-size') || 1;
-						goal.max = (goal.max * Math.ceil((parent.max - parent.value) / batch) * batch).toString();
+						goal.max *= Math.ceil((parentProgress.max - parentProgress.value) / batch) * batch;
+						goal.setAttribute('max', goal.max.toString()); // fix "1e+6"
 					}
 
 					if (goal.getAttribute('data-item-goal')) {
@@ -60,6 +56,8 @@ if (location.search === "?debug") {
 						goal.value = achievement ? achievement.current : 0;
 						if (achievement && achievement.done) {
 							goal.parentNode.parentNode.classList.add('complete');
+						} else {
+							recurse(goal.parentNode.parentNode, selector + " + ul > li:not(.complete) > a");
 						}
 						goal.parentNode.title = goal.parentNode.firstElementChild.title;
 						return;
@@ -71,6 +69,7 @@ if (location.search === "?debug") {
 							goal.parentNode.parentNode.classList.add('complete');
 						} else {
 							goal.value = 0;
+							recurse(goal.parentNode.parentNode, selector + " + ul > li:not(.complete) > a");
 						}
 						goal.parentNode.title = goal.parentNode.firstElementChild.title;
 						return;
@@ -81,9 +80,11 @@ if (location.search === "?debug") {
 						goal.parentNode.title = goal.parentNode.firstElementChild.title;
 					} else {
 						goal.parentNode.title = goal.parentNode.firstElementChild.title + ' (' + (goal.max - goal.value) + ' remaining)';
+						recurse(goal.parentNode.parentNode, selector + " + ul > li:not(.complete) > a");
 					}
 				});
 			}
+			recurse(details, "body > details > ul > li:not(.complete) > a");
 
 			var list = document.createElement('dl');
 			var rawMaterials = {};
