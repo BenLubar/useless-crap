@@ -223,7 +223,7 @@ request('http://gw2profits.com/json/v3', function(err, forgeRecipes) {
 					// assume mystic forge on ascended items is incorrect (see: condensed/coagulated/crystallized mists essence)
 					recipe = null;
 				}
-				if (recipe && recipe.disciplines[0] === 'Mystic Forge' && item.flags.indexOf('AccountBound') === -1) {
+				if (recipe && recipe.disciplines[0] === 'Mystic Forge' && item.flags.indexOf('AccountBound') === -1 && item.rarity !== 'Legendary') {
 					// assume mystic forge that results in tradable items are incorrect (see: lodestone from slivers)
 					recipe = null;
 				}
