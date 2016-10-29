@@ -21,7 +21,7 @@ if (location.search === "?debug") {
 		xhr.send();
 	}
 
-	var data = {currency: {}, item: {}, skin: {}, achievement: {}}, waiting = 7;
+	var data = {currency: {}, item: {}, skin: {}, achievement: {}, upgrade: {}}, waiting = 7;
 
 	function done() {
 		waiting--;
@@ -43,6 +43,10 @@ if (location.search === "?debug") {
 						var count = Math.min(data.item[goal.getAttribute('data-item-goal')] || 0, goal.max);
 						goal.value = count;
 						data.item[goal.getAttribute('data-item-goal')] -= count;
+					} else if (goal.getAttribute('data-upgrade-goal')) {
+						var count = Math.min(data.upgrade[goal.getAttribute('data-upgrade-goal')] || 0, goal.max);
+						goal.value = count;
+						data.upgrade[goal.getAttribute('data-upgrade-goal')] -= count;
 					} else if (goal.getAttribute('data-currency-goal')) {
 						var count = Math.min(data.currency[goal.getAttribute('data-currency-goal')] || 0, goal.max);
 						goal.value = count;
@@ -212,6 +216,12 @@ if (location.search === "?debug") {
 
 			character.equipment.forEach(function(item) {
 				data.item[item.id] = (data.item[item.id] || 0) + 1;
+				(item.upgrades || []).concat(item.infusions || []).forEach(function(upgrade) {
+					if (upgrade) {
+						var key = character.name + ':' + upgrade;
+						data.upgrade[key] = (data.upgrade[key] || 0) + 1;
+					}
+				});
 			});
 		});
 
