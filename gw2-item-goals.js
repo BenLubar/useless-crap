@@ -31,7 +31,9 @@ if (location.search === "?debug") {
 
 		[].slice.call(document.querySelectorAll("body > details")).forEach(function(details) {
 			function recurse(parent, selector) {
-				[].slice.call(parent.querySelectorAll(selector + " > progress")).forEach(function(goal) {
+				var completed = 0;
+				var goals = [].slice.call(parent.querySelectorAll(selector + " > progress"));
+				goals.forEach(function(goal) {
 					if (parent !== details) {
 						var parentProgress = parent.querySelector("a > progress");
 						var batch = goal.parentNode.parentNode.parentNode.getAttribute('data-batch-size') || 1;
@@ -60,6 +62,7 @@ if (location.search === "?debug") {
 						goal.value = achievement ? achievement.current : 0;
 						if (achievement && achievement.done) {
 							goal.parentNode.parentNode.classList.add('complete');
+							completed++;
 						} else {
 							recurse(goal.parentNode.parentNode, selector + " + ul > li:not(.complete) > a");
 						}
@@ -71,9 +74,21 @@ if (location.search === "?debug") {
 						if (achievement && achievement.bits.indexOf(+goal.getAttribute('data-achievement-bit')) !== -1) {
 							goal.value = 1;
 							goal.parentNode.parentNode.classList.add('complete');
+							completed++;
 						} else {
 							goal.value = 0;
 							recurse(goal.parentNode.parentNode, selector + " + ul > li:not(.complete) > a");
+						}
+						goal.parentNode.title = goal.parentNode.firstElementChild.title;
+						return;
+					} else if (goal.getAttribute('data-generic-goal') !== null) {
+						goal.max = 1;
+						var generic = recurse(goal.parentNode.parentNode, selector + " + ul > li:not(.complete) > a");
+						goal.value = generic[0];
+						goal.max = generic[1];
+						if (goal.value === goal.max) {
+							goal.parentNode.parentNode.classList.add('complete');
+							completed++;
 						}
 						goal.parentNode.title = goal.parentNode.firstElementChild.title;
 						return;
@@ -82,11 +97,14 @@ if (location.search === "?debug") {
 					if (goal.value === goal.max) {
 						goal.parentNode.parentNode.classList.add('complete');
 						goal.parentNode.title = goal.parentNode.firstElementChild.title;
+						completed++;
 					} else {
 						goal.parentNode.title = goal.parentNode.firstElementChild.title + ' (' + (goal.max - goal.value) + ' remaining)';
 						recurse(goal.parentNode.parentNode, selector + " + ul > li:not(.complete) > a");
 					}
 				});
+
+				return [completed, goals.length];
 			}
 			recurse(details, "body > details > ul > li:not(.complete) > a");
 
