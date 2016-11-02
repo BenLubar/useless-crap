@@ -4,6 +4,9 @@ var costs = [
 	[[500, 100000], [500, 100000], [750, 150000], [300, 60000], [625, 125000], [300, 60000]]
 ];
 
+var dungeonWeaponCosts = [300, 300, 300, 300, 300, 300, 210, 210, 210, 210, 390, 390, 390, 390, 390, 390, 390, 390, 390];
+var dungeonArmorCosts = [180, 210, 330, 180, 300, 180];
+
 var sets = [
 	{"race": "Asura", "light": ["Adept", "Genius", "Savant"], "medium": ["Protean", "Auxiliary Powered", "Prototype"], "heavy": ["Galvanic", "Electroplated", "Electromagnetic"]},
 	{"race": "Charr", "light": ["Invoker's", "Archon", "Magus"], "medium": ["Drover", "Wrangler", "Trapper"], "heavy": ["Warband", "Legion", "Dreadnought"]},
@@ -13,6 +16,17 @@ var sets = [
 ];
 
 var weaponSets = ["Peacemaker's", "Adamant Guard", "Seraph", "Wolfborn", "Warden", "Ebon Vanguard", "Lionguard"];
+
+var dungeons = [
+	{"a": ["Ascalonian Performer armor", "Ascalonian Sentry armor", "Ascalonian Protector armor"], "w": "Royal Ascalonian weapons", "c": {"id":5,"name":"Ascalonian Tear","description":"Earned in Ascalonian Catacombs. Spent in Lion's Arch to purchase rare and exotic gear, runes and sigils, crafting materials, and the \"Gift of Ascalon\" component used in creating legendary weapons.","order":710,"icon":"https://render.guildwars2.com/file/2AA9C0B030BE152B915E0174D7F0495FDA711C54/619318.png"}},
+	{"a": ["Council Ministry armor", "Council Watch armor", "Council Guard armor"], "w": "Golden Wing weapons", "c": {"id":9,"name":"Seal of Beetletun","description":"Earned in Caudecus's Manor. Spent in Lion's Arch to purchase rare and exotic gear, runes and sigils, crafting materials, and the \"Gift of the Nobleman\" component used in creating legendary weapons.","order":720,"icon":"https://render.guildwars2.com/file/C97B0607A6DB1FA1469D1DBBF2F107A057F8A313/619322.png"}},
+	{"a": ["Nightmare Court armor (light)", "Nightmare Court armor (medium)", "Nightmare Court armor (heavy)"], "w": "Nightmare weapons", "c": {"id":11,"name":"Deadly Bloom","description":"Earned in Twilight Arbor. Spent in Lion's Arch to purchase rare and exotic gear, runes and sigils, crafting materials, and the \"Gift of Thorns\" component used in creating legendary weapons.","order":730,"icon":"https://render.guildwars2.com/file/F6F4F39212AF3324223D73BAA807026BD863997C/619324.png"}},
+	{"a": ["Forgeman armor (light)", "Forgeman armor (medium)", "Forgeman armor (heavy)"], "w": "Dark Asuran weapons", "c": {"id":10,"name":"Manifesto of the Moletariate","description":"Earned in Sorrow's Embrace. Spent in Lion's Arch to purchase rare and exotic gear, runes and sigils, crafting materials, and the \"Gift of the Forgeman\" component used in creating legendary weapons.","order":740,"icon":"https://render.guildwars2.com/file/B83A4ED528FC237D4D1862CDD0250B773EAB36AA/619323.png"}},
+	{"a": ["Flame Legion armor (light)", "Flame Legion armor (medium)", "Flame Legion armor (heavy)"], "w": "Molten weapons", "c": {"id":13,"name":"Flame Legion Charr Carving","description":"Earned in Citadel of Flame. Spent in Lion's Arch to purchase rare and exotic gear, runes and sigils, crafting materials, and the \"Gift of Baelfire\" component used in creating legendary weapons.","order":750,"icon":"https://render.guildwars2.com/file/310CA245DBF61A54BD0C5D5361E26F0821FCAAFD/619326.png"}},
+	{"a": ["Armor of Koda (light)", "Armor of Koda (medium)", "Armor of Koda (heavy)"], "w": "Kodan weapons", "c": {"id":12,"name":"Symbol of Koda","description":"Earned in Honor of the Waves. Spent in Lion's Arch to purchase rare and exotic gear, runes and sigils, crafting materials, and the \"Gift of the Sanctuary\" component used in creating legendary weapons.","order":760,"icon":"https://render.guildwars2.com/file/2B9E2BC9D5D080C54C17E27CECACEFFC0D64EE22/619325.png"}},
+	{"a": ["Inquest armor (light)", "Inquest armor (medium)", "Inquest armor (heavy)"], "w": "Inquest weapons", "c": {"id":14,"name":"Knowledge Crystal","description":"Earned in Crucible of Eternity. Spent in Lion's Arch to purchase rare and exotic gear, runes and sigils, crafting materials, and the \"Gift of Knowledge\" component used in creating legendary weapons.","order":770,"icon":"https://render.guildwars2.com/file/37CCE672250A3170B71760949C4C9C9B186517B1/619327.png"}},
+	{"a": ["Armor of the Lich", "Accursed armor", "Grasping Dead armor"], "w": "Weapons of the Dragon's Deep", "c": {"id":6,"name":"Shard of Zhaitan","description":"Earned in the Ruined City of Arah. Spent in Lion's Arch to purchase rare and exotic gear, runes and sigils, crafting materials, and the \"Gift of Zhaitan\" component used in creating legendary weapons.","order":780,"icon":"https://render.guildwars2.com/file/06083C4F7321512918E23D57B999F04E94C8D9A3/619319.png"}}
+];
 
 var skinCodes = [
 	"CgcBAAA=", "Cg0BAAA=", "ChEBAAA=", "Cg4BAAA=", "CgwBAAA=", "CiEBAAA=",
@@ -67,7 +81,41 @@ var skinCodes = [
 	"CsoQAAA=", "CvYQAAA=", "CskQAAA=", "CsUQAAA=", "Cs4QAAA=", "CvkQAAA=", "CsYQAAA=", "CrMQAAA=", "CrAQAAA=", "CtAQAAA=", "CtwQAAA=", "Cu4QAAA=", "Cs8QAAA=", "CtEQAAA=", "CrQQAAA=", "CvgQAAA=", "CtsQAAA=", "CrsQAAA=", "Cr4QAAA=",
 	"CqQQAAA=", "CvUQAAA=", "CqMQAAA=", "Cq4QAAA=", "CqIQAAA=", "CqgQAAA=", "CtUQAAA=", "CqEQAAA=", "CsIQAAA=", "CqYQAAA=", "CvEQAAA=", "CvcQAAA=", "CqUQAAA=", "CvAQAAA=", "CtoQAAA=", "Cq0QAAA=", "CuAQAAA=", "CsQQAAA=", "CrUQAAA=",
 	"CjASAAA=", "CjcSAAA=", "CgsSAAA=", "Cv0RAAA=", "CvoRAAA=", "CgMSAAA=", "CvkRAAA=", "CvERAAA=", "ChsSAAA=", "Cg4SAAA=", "CgESAAA=", "ChMSAAA=", "CgYSAAA=", "ChESAAA=", "CiYSAAA=", "ChQSAAA=", "CioSAAA=", "ChwSAAA=", "Ch8SAAA=",
-	"CvYRAAA=", "CgcSAAA=", "Ci4SAAA=", "CiQSAAA=", "Cu4RAAA=", "ChUSAAA=", "CuoRAAA=", "Cu0RAAA=", "Ch0SAAA=", "CjESAAA=", "CjUSAAA=", "CgQSAAA=", "ChASAAA=", "CgISAAA=", "CigSAAA=", "Ch4SAAA=", "Ci0SAAA=", "CuwRAAA=", "CiASAAA="
+	"CvYRAAA=", "CgcSAAA=", "Ci4SAAA=", "CiQSAAA=", "Cu4RAAA=", "ChUSAAA=", "CuoRAAA=", "Cu0RAAA=", "Ch0SAAA=", "CjESAAA=", "CjUSAAA=", "CgQSAAA=", "ChASAAA=", "CgISAAA=", "CigSAAA=", "Ch4SAAA=", "Ci0SAAA=", "CuwRAAA=", "CiASAAA=",
+
+	"CnACAAA=", "CmsCAAA=", "CmUCAAA=", "CnMCAAA=", "CmYCAAA=", "CmwCAAA=",
+	"Cm8CAAA=", "CmkCAAA=", "CmMCAAA=", "CnICAAA=", "CmQCAAA=", "CmoCAAA=",
+	"CnECAAA=", "Cm0CAAA=", "CmcCAAA=", "CnQCAAA=", "CmgCAAA=", "Cm4CAAA=",
+	"CpUCAAA=", "CpECAAA=", "Co4CAAA=", "CpcCAAA=", "Co8CAAA=", "CpMCAAA=",
+	"CpQCAAA=", "CpACAAA=", "Co0CAAA=", "CpYCAAA=", "CowCAAA=", "CpICAAA=",
+	"CosCAAA=", "CokCAAA=", "CocCAAA=", "CpgCAAA=", "CogCAAA=", "CooCAAA=",
+	"CrACAAA=", "Cq4CAAA=", "CqwCAAA=", "CrECAAA=", "Cq0CAAA=", "Cq8CAAA=",
+	"Cr0CAAA=", "CrQCAAA=", "CrICAAA=", "CrsCAAA=", "CrMCAAA=", "CrUCAAA=",
+	"CroCAAA=", "CrgCAAA=", "CrYCAAA=", "CrwCAAA=", "CrcCAAA=", "CrkCAAA=",
+	"CqICAAA=", "CqACAAA=", "Cp4CAAA=", "CqMCAAA=", "Cp8CAAA=", "CqECAAA=",
+	"CqgCAAA=", "CqcCAAA=", "CqQCAAA=", "CqoCAAA=", "CqUCAAA=", "CqYCAAA=",
+	"Cp0CAAA=", "CpsCAAA=", "CpkCAAA=", "CqsCAAA=", "CpoCAAA=", "CpwCAAA=",
+	"CtoCAAA=", "CtcCAAA=", "CtYCAAA=", "CtkCAAA=", "CtUCAAA=", "CtgCAAA=",
+	"Ct8CAAA=", "Ct0CAAA=", "CtwCAAA=", "CuACAAA=", "CtsCAAA=", "Ct4CAAA=",
+	"CtQCAAA=", "CtICAAA=", "CtECAAA=", "CuECAAA=", "CtACAAA=", "CtMCAAA=",
+	"CssCAAA=", "CsUCAAA=", "CsACAAA=", "Cs4CAAA=", "CsECAAA=", "CsgCAAA=",
+	"CsoCAAA=", "CsQCAAA=", "Cr8CAAA=", "Cs0CAAA=", "Cr4CAAA=", "CscCAAA=",
+	"CswCAAA=", "CsYCAAA=", "CsICAAA=", "Cs8CAAA=", "CsMCAAA=", "CskCAAA=",
+	"CvACAAA=", "Cu4CAAA=", "Cu0CAAA=", "CvICAAA=", "CuwCAAA=", "Cu8CAAA=",
+	"CusCAAA=", "CukCAAA=", "CucCAAA=", "CvECAAA=", "CugCAAA=", "CuoCAAA=",
+	"CuYCAAA=", "CuQCAAA=", "CuICAAA=", "CvMCAAA=", "CuMCAAA=", "CuUCAAA=",
+	"Cn8CAAA=", "CnwCAAA=", "CnoCAAA=", "Cn4CAAA=", "CnsCAAA=", "Cn0CAAA=",
+	"CoQCAAA=", "CoICAAA=", "CoECAAA=", "CoUCAAA=", "CoACAAA=", "CoMCAAA=",
+	"CnkCAAA=", "CncCAAA=", "CnYCAAA=", "CoYCAAA=", "CnUCAAA=", "CngCAAA=",
+
+	"CggRAAA=", "ChURAAA=", "CgkRAAA=", "CmkRAAA=", "CgURAAA=", "CiwRAAA=", "CgQRAAA=", "CjMRAAA=", "CiARAAA=", "ChIRAAA=", "ChQRAAA=", "CiERAAA=", "CgsRAAA=", "CpIRAAA=", "CiYRAAA=", "CjARAAA=", "Co0RAAA=", "Ck8RAAA=", "CkURAAA=",
+	"CmYRAAA=", "CqIRAAA=", "CmsRAAA=", "CmMRAAA=", "CmURAAA=", "CqoRAAA=", "CkYRAAA=", "ChARAAA=", "ChMRAAA=", "CmIRAAA=", "CnsRAAA=", "Cp8RAAA=", "CjcRAAA=", "Cm8RAAA=", "ChYRAAA=", "CpYRAAA=", "CoMRAAA=", "CkERAAA=", "CjsRAAA=",
+	"CnARAAA=", "CqURAAA=", "CnoRAAA=", "CmgRAAA=", "CnERAAA=", "CroRAAA=", "ClERAAA=", "Ci8RAAA=", "ChwRAAA=", "CpkRAAA=", "CoIRAAA=", "CqARAAA=", "Cl4RAAA=", "CpARAAA=", "Ch8RAAA=", "CrERAAA=", "CooRAAA=", "CkwRAAA=", "Cj8RAAA=",
+	"CnYRAAA=", "Ch0RAAA=", "ChsRAAA=", "ChoRAAA=", "CnkRAAA=", "CrQRAAA=", "CgcRAAA=", "CjERAAA=", "Ch4RAAA=", "CpwRAAA=", "CocRAAA=", "CqQRAAA=", "CmQRAAA=", "CjwRAAA=", "CiMRAAA=", "CrIRAAA=", "Ci4RAAA=", "ChcRAAA=", "CkQRAAA=",
+	"CmwRAAA=", "CqMRAAA=", "CnMRAAA=", "CgIRAAA=", "CmoRAAA=", "CrkRAAA=", "CkoRAAA=", "CisRAAA=", "ChgRAAA=", "CgERAAA=", "CoERAAA=", "CgMRAAA=", "ClwRAAA=", "CowRAAA=", "ChkRAAA=", "CrARAAA=", "CoYRAAA=", "CkcRAAA=", "Ci0RAAA=",
+	"Cl8RAAA=", "CiQRAAA=", "CmcRAAA=", "CloRAAA=", "CmERAAA=", "CrgRAAA=", "CkIRAAA=", "CioRAAA=", "Cg0RAAA=", "CpcRAAA=", "CngRAAA=", "CkgRAAA=", "ClQRAAA=", "Cj0RAAA=", "ChERAAA=", "Cq8RAAA=", "CoARAAA=", "Cg4RAAA=", "CjgRAAA=",
+	"ClMRAAA=", "CpsRAAA=", "ClsRAAA=", "ClARAAA=", "ClcRAAA=", "CrcRAAA=", "CjkRAAA=", "CiURAAA=", "CgYRAAA=", "CpURAAA=", "Cm0RAAA=", "CpoRAAA=", "CkkRAAA=", "CoURAAA=", "CgwRAAA=", "Cq0RAAA=", "CncRAAA=", "CjoRAAA=", "CjIRAAA=",
+	"Cl0RAAA=", "Cp0RAAA=", "CmARAAA=", "ClgRAAA=", "ClkRAAA=", "CqYRAAA=", "Cj4RAAA=", "CicRAAA=", "CgoRAAA=", "ClIRAAA=", "CnQRAAA=", "CnURAAA=", "Ck4RAAA=", "CosRAAA=", "Cg8RAAA=", "Co4RAAA=", "CnwRAAA=", "CkARAAA=", "CjYRAAA="
 ];
 
 var skinIDs = skinCodes.map(function(text) {
@@ -155,6 +203,91 @@ for (var weaponSet = 0; weaponSet < 7; weaponSet++) {
 		output.push(skins[i].id);
 		output.push("\"></progress></a>\n\t\t\t\t\t\t<ul>\n\t\t\t\t\t\t\t<li><a href=\"https://wiki.guildwars2.com/wiki/Karma\"><img src=\"https://render.guildwars2.com/file/94953FA23D3E0D23559624015DFEA4CFAA07F0E5/155026.png\" alt=\"Karma\" title=\"Karma\"> <progress value=\"0\" max=\"63000\" data-currency-goal=\"2\"></progress></a></li>\n\t\t\t\t\t\t</ul>\n\t\t\t\t\t</li>");
 
+		i++;
+	}
+	output.push("\n\t\t\t\t</ul>\n\t\t\t</li>");
+}
+
+for (var dungeon = 0; dungeon < 8; dungeon++) {
+	for (var weight = 0; weight < 3; weight++) {
+		output.push("\n\t\t\t<li id=\"");
+		output.push(dungeons[dungeon].a[weight].toLowerCase().replace(/ /g, '_').replace(/'/g, ''));
+		output.push("\">\n\t\t\t\t<a href=\"https://wiki.guildwars2.com/wiki/");
+		output.push(dungeons[dungeon].a[weight].replace(/ /g, '_'));
+		output.push("\"><img src=\"");
+		output.push(skins[i].icon);
+		output.push("\" alt=\"");
+		output.push(dungeons[dungeon].a[weight]);
+		output.push("\" title=\"");
+		output.push(dungeons[dungeon].a[weight]);
+		output.push("\"> <progress value=\"0\" max=\"1\" data-generic-goal></progress></a>\n\t\t\t\t<ul>");
+		for (var piece = 0; piece < 6; piece++) {
+			output.push("\n\t\t\t\t\t<li>\n\t\t\t\t\t\t<a href=\"https://wiki.guildwars2.com/wiki/");
+			output.push(skins[i].name.replace(/ /g, '_'));
+			output.push("\"><img src=\"");
+			output.push(skins[i].icon);
+			output.push("\" alt=\"");
+			output.push(skins[i].name);
+			output.push("\" title=\"");
+			output.push(skins[i].name);
+			output.push("\"> <progress value=\"0\" max=\"1\" data-skin-goal=\"");
+			output.push(skins[i].id);
+			output.push("\"></progress></a>\n\t\t\t\t\t\t<ul>\n\t\t\t\t\t\t\t<li><a href=\"https://wiki.guildwars2.com/wiki/");
+			output.push(dungeons[dungeon].c.name.replace(/ /g, '_'));
+			output.push("\"><img src=\"");
+			output.push(dungeons[dungeon].c.icon);
+			output.push("\" alt=\"");
+			output.push(dungeons[dungeon].c.name);
+			output.push("\" title=\"");
+			output.push(dungeons[dungeon].c.name);
+			output.push("\"> <progress value=\"0\" max=\"");
+			output.push(dungeonArmorCosts[piece]);
+			output.push("\" data-currency-goal=\"");
+			output.push(dungeons[dungeon].c.id);
+			output.push("\"></progress></a></li>\n\t\t\t\t\t\t</ul>\n\t\t\t\t\t</li>");
+
+			i++;
+		}
+		output.push("\n\t\t\t\t</ul>\n\t\t\t</li>");
+	}
+}
+
+for (var dungeon = 0; dungeon < 8; dungeon++) {
+	output.push("\n\t\t\t<li id=\"");
+	output.push(dungeons[dungeon].w.toLowerCase().replace(/ /g, '_').replace(/'/g, ''));
+	output.push("\">\n\t\t\t\t<a href=\"https://wiki.guildwars2.com/wiki/");
+	output.push(dungeons[dungeon].w.replace(/ /g, '_'));
+	output.push("\"><img src=\"");
+	output.push(skins[i].icon);
+	output.push("\" alt=\"");
+	output.push(dungeons[dungeon].w);
+	output.push("\" title=\"");
+	output.push(dungeons[dungeon].w);
+	output.push("\"> <progress value=\"0\" max=\"1\" data-generic-goal></progress></a>\n\t\t\t\t<ul>");
+	for (var weapon = 0; weapon < 19; weapon++) {
+		output.push("\n\t\t\t\t\t<li>\n\t\t\t\t\t\t<a href=\"https://wiki.guildwars2.com/wiki/");
+		output.push(skins[i].name.replace(/ /g, '_'));
+		output.push("\"><img src=\"");
+		output.push(skins[i].icon);
+		output.push("\" alt=\"");
+		output.push(skins[i].name);
+		output.push("\" title=\"");
+		output.push(skins[i].name);
+		output.push("\"> <progress value=\"0\" max=\"1\" data-skin-goal=\"");
+		output.push(skins[i].id);
+		output.push("\"></progress></a>\n\t\t\t\t\t\t<ul>\n\t\t\t\t\t\t\t<li><a href=\"https://wiki.guildwars2.com/wiki/");
+		output.push(dungeons[dungeon].c.name.replace(/ /g, '_'));
+		output.push("\"><img src=\"");
+		output.push(dungeons[dungeon].c.icon);
+		output.push("\" alt=\"");
+		output.push(dungeons[dungeon].c.name);
+		output.push("\" title=\"");
+		output.push(dungeons[dungeon].c.name);
+		output.push("\"> <progress value=\"0\" max=\"");
+		output.push(dungeonWeaponCosts[weapon]);
+		output.push("\" data-currency-goal=\"");
+		output.push(dungeons[dungeon].c.id);
+		output.push("\"></progress></a></li>\n\t\t\t\t\t\t</ul>\n\t\t\t\t\t</li>");
 		i++;
 	}
 	output.push("\n\t\t\t\t</ul>\n\t\t\t</li>");
