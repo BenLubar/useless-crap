@@ -12,6 +12,8 @@ var sets = [
 	{"race": "Sylvari", "light": ["Snapdragon", "Orchid", "Dryad"], "medium": ["Evergreen", "Nightshade", "Firstborn"], "heavy": ["Arborist", "Warden", "Oaken"]}
 ];
 
+var weaponSets = ["Peacemaker's", "Adamant Guard", "Seraph", "Wolfborn", "Warden", "Ebon Vanguard", "Lionguard"];
+
 var skinCodes = [
 	"CgcBAAA=", "Cg0BAAA=", "ChEBAAA=", "Cg4BAAA=", "CgwBAAA=", "CiEBAAA=",
 	"CgkBAAA=", "CgoBAAA=", "ChQBAAA=", "ChABAAA=", "ChIBAAA=", "CiQBAAA=",
@@ -57,7 +59,15 @@ var skinCodes = [
 	"CvIBAAA=", "CuwBAAA=", "CgUCAAA=", "Cv0BAAA=", "CgACAAA=", "Cg8CAAA=",
 	"CvsBAAA=", "CgYCAAA=", "CggCAAA=", "CgQCAAA=", "CgMCAAA=", "ChICAAA=",
 	"CgECAAA=", "CvgBAAA=", "Cg0CAAA=", "CgsCAAA=", "CgoCAAA=", "ChMCAAA=",
-	"CgICAAA=", "Cv8BAAA=", "ChECAAA=", "Cg4CAAA=", "CgwCAAA=", "ChQCAAA="
+	"CgICAAA=", "Cv8BAAA=", "ChECAAA=", "Cg4CAAA=", "CgwCAAA=", "ChQCAAA=",
+
+	"CukQAAA=", "CvwQAAA=", "CtcQAAA=", "CqwQAAA=", "CqsQAAA=", "Cv4QAAA=", "CqoQAAA=", "CsgQAAA=", "Cr8QAAA=", "CrYQAAA=", "Cu8QAAA=", "CvQQAAA=", "CuwQAAA=", "CrEQAAA=", "CtgQAAA=", "CrcQAAA=", "Ct4QAAA=", "CsAQAAA=", "CqcQAAA=",
+	"CuUQAAA=", "CvIQAAA=", "CuEQAAA=", "CqkQAAA=", "CucQAAA=", "Cv8QAAA=", "CuIQAAA=", "CsEQAAA=", "CrgQAAA=", "Ct8QAAA=", "CtQQAAA=", "CuMQAAA=", "CoQQAAA=", "Cs0QAAA=", "CtIQAAA=", "CvsQAAA=", "CtYQAAA=", "CrkQAAA=", "CroQAAA=",
+	"CuYQAAA=", "CvoQAAA=", "CrIQAAA=", "CtkQAAA=", "CuoQAAA=", "CgARAAA=", "CuQQAAA=", "CscQAAA=", "CrwQAAA=", "CugQAAA=", "Cq8QAAA=", "CvMQAAA=", "CusQAAA=", "Cu0QAAA=", "CtMQAAA=", "Cv0QAAA=", "Ct0QAAA=", "Cr0QAAA=", "CsMQAAA=",
+	"CsoQAAA=", "CvYQAAA=", "CskQAAA=", "CsUQAAA=", "Cs4QAAA=", "CvkQAAA=", "CsYQAAA=", "CrMQAAA=", "CrAQAAA=", "CtAQAAA=", "CtwQAAA=", "Cu4QAAA=", "Cs8QAAA=", "CtEQAAA=", "CrQQAAA=", "CvgQAAA=", "CtsQAAA=", "CrsQAAA=", "Cr4QAAA=",
+	"CqQQAAA=", "CvUQAAA=", "CqMQAAA=", "Cq4QAAA=", "CqIQAAA=", "CqgQAAA=", "CtUQAAA=", "CqEQAAA=", "CsIQAAA=", "CqYQAAA=", "CvEQAAA=", "CvcQAAA=", "CqUQAAA=", "CvAQAAA=", "CtoQAAA=", "Cq0QAAA=", "CuAQAAA=", "CsQQAAA=", "CrUQAAA=",
+	"CjASAAA=", "CjcSAAA=", "CgsSAAA=", "Cv0RAAA=", "CvoRAAA=", "CgMSAAA=", "CvkRAAA=", "CvERAAA=", "ChsSAAA=", "Cg4SAAA=", "CgESAAA=", "ChMSAAA=", "CgYSAAA=", "ChESAAA=", "CiYSAAA=", "ChQSAAA=", "CioSAAA=", "ChwSAAA=", "Ch8SAAA=",
+	"CvYRAAA=", "CgcSAAA=", "Ci4SAAA=", "CiQSAAA=", "Cu4RAAA=", "ChUSAAA=", "CuoRAAA=", "Cu0RAAA=", "Ch0SAAA=", "CjESAAA=", "CjUSAAA=", "CgQSAAA=", "ChASAAA=", "CgISAAA=", "CigSAAA=", "Ch4SAAA=", "Ci0SAAA=", "CuwRAAA=", "CiASAAA="
 ];
 
 var skinIDs = skinCodes.map(function(text) {
@@ -102,7 +112,11 @@ for (var race = 0; race < 5; race++) {
 				output.push(skins[i].name.replace(/ /g, '_'));
 				output.push("\"><img src=\"");
 				output.push(skins[i].icon);
-				output.push("\" alt=\"\" title=\"\"> <progress value=\"0\" max=\"1\" data-skin-goal=\"");
+				output.push("\" alt=\"");
+				output.push(skins[i].name);
+				output.push("\" title=\"");
+				output.push(skins[i].name);
+				output.push("\"> <progress value=\"0\" max=\"1\" data-skin-goal=\"");
 				output.push(skins[i].id);
 				output.push("\"></progress></a>\n\t\t\t\t\t\t<ul>\n\t\t\t\t\t\t\t<li><a href=\"https://wiki.guildwars2.com/wiki/Badge_of_Honor\"><img src=\"https://render.guildwars2.com/file/AC3178E7BD066BC597F9D4247848E6033A047EDE/699004.png\" alt=\"Badge of Honor\" title=\"Badge of Honor\"> <progress value=\"0\" max=\"");
 				output.push(costs[tier][piece][0]);
@@ -115,6 +129,35 @@ for (var race = 0; race < 5; race++) {
 			output.push("\n\t\t\t\t</ul>\n\t\t\t</li>");
 		}
 	}
+}
+for (var weaponSet = 0; weaponSet < 7; weaponSet++) {
+	output.push("\n\t\t\t<li id=\"");
+	output.push(weaponSets[weaponSet].toLowerCase().replace(/ /g, '_').replace(/'/g, ''));
+	output.push("_weapons\">\n\t\t\t\t<a href=\"https://wiki.guildwars2.com/wiki/");
+	output.push(weaponSets[weaponSet].replace(/ /g, '_'));
+	output.push("_weapons\"><img src=\"");
+	output.push(skins[i].icon);
+	output.push("\" alt=\"");
+	output.push(weaponSets[weaponSet]);
+	output.push(" weapons\" title=\"");
+	output.push(weaponSets[weaponSet]);
+	output.push(" weapons\"> <progress value=\"0\" max=\"1\" data-generic-goal></progress></a>\n\t\t\t\t<ul>");
+	for (var weapon = 0; weapon < 19; weapon++) {
+		output.push("\n\t\t\t\t\t<li>\n\t\t\t\t\t\t<a href=\"https://wiki.guildwars2.com/wiki/");
+		output.push(skins[i].name.replace(/ /g, '_'));
+		output.push("\"><img src=\"");
+		output.push(skins[i].icon);
+		output.push("\" alt=\"");
+		output.push(skins[i].name);
+		output.push("\" title=\"");
+		output.push(skins[i].name);
+		output.push("\"> <progress value=\"0\" max=\"1\" data-skin-goal=\"");
+		output.push(skins[i].id);
+		output.push("\"></progress></a>\n\t\t\t\t\t\t<ul>\n\t\t\t\t\t\t\t<li><a href=\"https://wiki.guildwars2.com/wiki/Karma\"><img src=\"https://render.guildwars2.com/file/94953FA23D3E0D23559624015DFEA4CFAA07F0E5/155026.png\" alt=\"Karma\" title=\"Karma\"> <progress value=\"0\" max=\"63000\" data-currency-goal=\"2\"></progress></a></li>\n\t\t\t\t\t\t</ul>\n\t\t\t\t\t</li>");
+
+		i++;
+	}
+	output.push("\n\t\t\t\t</ul>\n\t\t\t</li>");
 }
 
 open('data:text/plain,' + encodeURIComponent(output.join('')));
