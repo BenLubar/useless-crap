@@ -86,8 +86,8 @@ func main() {
 		timeout = dom.GetWindow().SetTimeout(func() {
 			isCleaner = true
 			innerHTML = CleanPostContent(innerHTML)
-			innerHTML = strings.Replace(innerHTML, sepAnchor, "<a id=\"editor_anchor\"></a>", 1)
-			innerHTML = strings.Replace(innerHTML, sepFocus, "<a id=\"editor_focus\"></a>", 1)
+			innerHTML = strings.Replace(innerHTML, sepAnchor, "<i id=\"editor_anchor\"></i>", 1)
+			innerHTML = strings.Replace(innerHTML, sepFocus, "<i id=\"editor_focus\"></i>", 1)
 			post.SetInnerHTML(innerHTML)
 			anchor := post.QuerySelector("#editor_anchor")
 			focus := post.QuerySelector("#editor_focus")
