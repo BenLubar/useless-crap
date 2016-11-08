@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Forum UI prototype</title>
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<script type="text/x-golang-template" id="tmpl-topic-page">
+	{{template "post-list" .Posts}}
+	</script>
+	<script type="text/x-golang-template" id="tmpl-post-list">
+	<ul class="post-list">
+		{{range .}}
+		<li class="post" id="post-{{.ID}}">
+			{{with .Author}}
+			<aside class="post-author">
+				<strong class="user-name"><a>{{.Name}}</a></strong>
+				{{if .Avatar}}
+				<br>
+				<img src="{{.Avatar}}" class="user-avatar" width="128" height="128" alt="">
+				{{end}}
+			</aside>
+			{{else}}
+			<aside class="post-author guest-user">
+				<strong class="user-name">Guest</strong>
+			</aside>
+			{{end}}
+			<article class="post-content">
+				{{.Body}}
+			</article>
+		</li>
+		{{end}}
+	</ul>
+	</script>
+	<script src="forum-ui-prototype.js"></script>
+</body>
+</html>
