@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>WTDWTF nginx upstream calculator</title>
+	</head>
+	<body>
+		<form>
+			<p>
+				<label for="upstream-offset">X-Upstream header IP</label><br>
+				<select id="upstream-offset">
+					<option value="0">172.18.0.253</option>
+					<option value="8">172.18.0.254</option>
+				</select>
+			</p>
+			<p>
+				<label for="client-ip">Client IP</label><br>
+				<input type="text" id="client-ip" pattern="^(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}$">
+			</p>
+			<ul id="hits"></ul>
+		</form>
+		<script>
+var ips = [
+	'172.18.0.253:4567',
+	'172.18.0.253:4568',
+	'172.18.0.253:4569',
+	'172.18.0.253:4570',
+	'172.18.0.253:4571',
+	'172.18.0.253:4572',
+	'172.18.0.253:4573',
+	'172.18.0.253:4574',
+	'172.18.0.254:4567',
+	'172.18.0.254:4568',
+	'172.18.0.254:4569',
+	'172.18.0.254:4570',
+	'172.18.0.254:4571',
+	'172.18.0.254:4572',
+	'172.18.0.254:4573',
+	'172.18.0.254:4574'
+];
+
+function upstreams(ip, offset) {
+	var octetString = ip.split(/\./g);
+	var octets = new Uint8Array(3);
+	for (var i = 0; i < octets.length; i++) {
+		octets[i] = parseInt(octetString[i], 10);
+	}
+
+	var hits = [];
+
+	var hash = 89;
+	for (var tries = 0; tries < 20; tries++) {
+		for (var i = 0; i < octets.length; i++) {
+			hash = (hash * 113 + octets[i]) % 6271;
+		}
+
+		var hit = hash % ips.length;
+
+		if ((hit & 8) !== offset) {
+			continue;
+		}
+
+		if (hits.indexOf(ips[hit]) !== -1) {
+			continue;
+		}
+
+		hits.push(ips[hit]);
+	}
+
+	return hits;
+}
+
+var uo = document.getElementById('upstream-offset');
+var ci = document.getElementById('client-ip');
+var ipPattern = new RegExp(ci.getAttribute('pattern'));
+var ul = document.getElementById('hits');
+uo.onchange = ci.onchange = function() {
+	while (ul.firstChild) {
+		ul.removeChild(ul.firstChild);
+	}
+	if (!ipPattern.exec(ci.value)) {
+		return;
+	}
+
+	var hits = upstreams(ci.value, parseInt(uo.value, 10));
+	hits.push('round robin');
+	hits.forEach(function(ip) {
+		var li = document.createElement('li');
+		li.textContent = ip;
+		ul.appendChild(li);
+	});
+};
+
+document.querySelector('form').onsubmit = function() { return false; };
+		</script>
+	</body>
+</html>
