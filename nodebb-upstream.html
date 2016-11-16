@@ -73,7 +73,12 @@ var uo = document.getElementById('upstream-offset');
 var ci = document.getElementById('client-ip');
 var ipPattern = new RegExp(ci.getAttribute('pattern'));
 var ul = document.getElementById('hits');
-uo.onchange = ci.onchange = function() {
+var xhr = new XMLHttpRequest();
+function update() {
+	if (xhr) {
+		xhr.abort();
+		xhr = null;
+	}
 	while (ul.firstChild) {
 		ul.removeChild(ul.firstChild);
 	}
@@ -89,6 +94,19 @@ uo.onchange = ci.onchange = function() {
 		ul.appendChild(li);
 	});
 };
+
+uo.onchange = ci.onchange = update;
+
+xhr.open('GET', 'https://what.thedailywtf.com/api/tdwtf-ip', true);
+xhr.onload = function() {
+	var data = JSON.parse(xhr.responseText);
+	if (data.client_ip && data.upstream_ip) {
+		ci.value = data.client_ip;
+		uo.value = data.upstream_ip.substr(-4) === '.253' ? '0' : '8';
+		update();
+	}
+};
+xhr.send(null);
 
 document.querySelector('form').onsubmit = function() { return false; };
 		</script>
