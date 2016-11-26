@@ -21,7 +21,7 @@ if (location.search === "?debug") {
 		xhr.send();
 	}
 
-	var data = {currency: {}, item: {}, skin: {}, achievement: {}, upgrade: {}}, waiting = 7;
+	var data = {currency: {}, item: {}, skin: {}, mini: {}, achievement: {}, upgrade: {}}, waiting = 7;
 
 	function done() {
 		waiting--;
@@ -56,6 +56,9 @@ if (location.search === "?debug") {
 					} else if (goal.getAttribute('data-skin-goal')) {
 						goal.max = 1;
 						goal.value = data.skin[goal.getAttribute('data-skin-goal')] ? 1 : 0;
+					} else if (goal.getAttribute('data-mini-goal')) {
+						goal.max = 1;
+						goal.value = data.mini[goal.getAttribute('data-mini-goal')] ? 1 : 0;
 					} else if (goal.getAttribute('data-achievement-goal')) {
 						var achievement = data.achievement[goal.getAttribute('data-achievement-goal')];
 						goal.max = achievement ? achievement.max : 1;
@@ -171,6 +174,19 @@ if (location.search === "?debug") {
 
 		skins.forEach(function(skin) {
 			data.skin[skin] = true;
+		});
+
+		done();
+	});
+
+	request("account/minis", function(err, minis) {
+		if (err) {
+			console.log("minis:", err);
+			return;
+		}
+
+		minis.forEach(function(mini) {
+			data.mini[mini] = true;
 		});
 
 		done();
