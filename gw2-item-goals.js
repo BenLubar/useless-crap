@@ -21,7 +21,7 @@ if (location.search === "?debug") {
 		xhr.send();
 	}
 
-	var data = {currency: {}, item: {}, skin: {}, mini: {}, achievement: {}, upgrade: {}}, waiting = 7;
+	var data = {currency: {}, item: {}, skin: {}, mini: {}, achievement: {}, upgrade: {}}, waiting = 8;
 
 	function done() {
 		waiting--;
