@@ -151,6 +151,21 @@ if (location.search === "?debug") {
 			});
 			details.appendChild(list);
 		});
+
+		var el = document.querySelector(location.hash ? location.hash + ', [name="' + location.hash.replace(/\W/g, '') + '"]' : 'body > details > ul > li:not(.complete)');
+		if (el) {
+			if (el.scrollIntoViewIfNeeded) {
+				el.scrollIntoViewIfNeeded();
+			} else {
+				el.scrollIntoView();
+			}
+			for (; el && el !== document.body; el = el.parentNode) {
+				if (el.nodeName == "DETAILS") {
+					el.open = true;
+					break;
+				}
+			}
+		}
 	}
 
 	request("account/wallet", function(err, wallet) {
@@ -261,13 +276,4 @@ if (location.search === "?debug") {
 
 		done();
 	});
-
-	if (location.hash) {
-		for (var el = document.querySelector(location.hash + ', [name="' + location.hash.substring(1) + '"]'); el && el !== document.body; el = el.parentNode) {
-			if (el.nodeName == "DETAILS") {
-				el.open = true;
-				break;
-			}
-		}
-	}
 })();
