@@ -170,6 +170,8 @@ if (location.search === "?debug") {
 						return;
 					}
 
+					goal.setAttribute('value', goal.value.toString()); // fix "1e+6"
+
 					if (goal.value === goal.max) {
 						goal.parentNode.parentNode.classList.add('complete');
 						goal.parentNode.title = goal.parentNode.firstElementChild.title;
