@@ -1,4 +1,4 @@
-var legendaries = [30684,30685,30686,30687,30688,30689,30690,30691,30692,30693,30694,30695,30696,30697,30698,30699,30700,30701,30702,71383,72713,76158,78556,79562,79802];
+var legendaries = [30684,30685,30686,30687,30688,30689,30690,30691,30692,30693,30694,30695,30696,30697,30698,30699,30700,30701,30702,71383,72713,76158,78556,79588,79537,79562,79900,79894,79802];
 
 function request(path, callback) {
 	var xhr = new XMLHttpRequest();
@@ -100,10 +100,6 @@ request('http://gw2profits.com/json/v3', function(err, forgeRecipes) {
 	fakeRecipes[19925] = fakeRecipes[19925].filter(function(r) {
 		return r.output_item_count === 1 && r.ingredients.length === 1 && r.ingredients[0].item_id === -2;
 	});
-	// Hotfix: Gift of Gliding has ley line crystals listed twice instead of aurilium
-	fakeRecipes[71311][0].ingredients[0].item_id = -19;
-	fakeRecipes[71311][0].ingredients[1].item_id = -22;
-	fakeRecipes[71311][0].ingredients[2].item_id = -20;
 
 	var getRecipesFor = function(itemID, callback) {
 		getRealRecipesByOutput(itemID, function(err, realRecipeIDs) {
@@ -135,26 +131,46 @@ request('http://gw2profits.com/json/v3', function(err, forgeRecipes) {
 		var outputCount = recipe.output_item_count;
 		var ingredients = recipe.ingredients.slice(0);
 
-		output.push(indent);
-		if (recipe.output_item_count !== 1) {
-			output.push('<ul data-batch-size="');
-			output.push(recipe.output_item_count);
-			output.push('">');
-		} else {
-			output.push('<ul>');
-		}
-		var nextIndent = indent + '\t';
-		function next() {
-			if (ingredients.length === 0) {
-				output.push(indent);
-				output.push('</ul>');
-				return done();
+		getItem(ingredients.map(function(i) {
+			return i.item_id;
+		}).filter(function(i) {
+			return i > 0;
+		}), function(err) {
+			if (err) {
+				throw err;
 			}
 
-			var ingredient = ingredients.shift();
-			addItem(ingredient.item_id, nextIndent, ingredient.count / outputCount, next);
-		}
-		next();
+			getCurrency(ingredients.map(function(i) {
+				return -i.item_id;
+			}).filter(function(i) {
+				return i > 0;
+			}), function(err) {
+				if (err) {
+					throw err;
+				}
+
+				output.push(indent);
+				if (recipe.output_item_count !== 1) {
+					output.push('<ul data-batch-size="');
+					output.push(recipe.output_item_count);
+					output.push('">');
+				} else {
+					output.push('<ul>');
+				}
+				var nextIndent = indent + '\t';
+				function next() {
+					if (ingredients.length === 0) {
+						output.push(indent);
+						output.push('</ul>');
+						return done();
+					}
+
+					var ingredient = ingredients.shift();
+					addItem(ingredient.item_id, nextIndent, ingredient.count / outputCount, next);
+				}
+				next();
+			});
+		});
 	}
 
 	function addAchievement(achievement, indent, done) {
@@ -309,40 +325,59 @@ request('http://gw2profits.com/json/v3', function(err, forgeRecipes) {
 				return;
 			}
 
+			var precursors = [];
 			var legendaryItem = legendaryItems.shift();
-			var liID = 'legendary_' + legendaryItem.name.toLowerCase().replace(/^the /, '').replace(/'/g, '').replace(/ /g, '_');
+			while (legendaryItem.rarity !== 'Legendary') {
+				precursors.push(legendaryItem);
+				legendaryItem = legendaryItems.shift();
+			}
 			output.push('\n\t<details>\n\t\t<summary><h1>');
 			output.push(legendaryItem.name);
-			output.push('</h1></summary>\n\t\t<ul>\n\t\t\t<li id="');
-			output.push(liID);
-			output.push('">\n\t\t\t\t<a href="https://wiki.guildwars2.com/wiki/');
-			output.push(legendaryItem.name.replace(/ /g, '_'));
-			output.push('"><img src="');
-			output.push(legendaryItem.icon);
-			output.push('" alt="');
-			output.push(legendaryItem.name);
-			output.push('" title="');
-			output.push(legendaryItem.name);
-			output.push('"> <progress value="0" max="1" data-skin-goal="');
-			output.push(legendaryItem.default_skin);
-			output.push('"></progress></a>');
-			getRecipesFor(legendaryItem.id, function(err, recipes) {
-				if (err) {
-					throw err;
-				}
-
-				if (recipes.length === 0) {
-					throw 'no recipe for legendary?!';
-				}
-
-				addRecipe(recipes[0], '\n\t\t\t\t', function() {
+			output.push('</h1></summary>\n\t\t<ul>');
+			function nextPrecursor() {
+				var liID = 'legendary_' + legendaryItem.name.toLowerCase().replace(/^the /, '').replace(/'/g, '').replace(/ /g, '_');
+				var nextItem = function() {
 					output.push('\n\t\t\t</li>\n\t\t</ul>\n\t\t<a name="');
 					output.push(liID);
 					output.push('_remaining"></a>\n\t</details>\n');
 					console.log('finished: ' + legendaryItem.name);
 					next();
+				};
+				var item = legendaryItem;
+				if (precursors.length) {
+					item = precursors.shift();
+					nextItem = function() {
+						output.push('\n\t\t\t</li>');
+						nextPrecursor();
+					};
+					liID += '_precursor_' + (2 - precursors.length);
+				}
+				output.push('\n\t\t\t<li id="');
+				output.push(liID);
+				output.push('">\n\t\t\t\t<a href="https://wiki.guildwars2.com/wiki/');
+				output.push(item.name.replace(/ /g, '_'));
+				output.push('"><img src="');
+				output.push(item.icon);
+				output.push('" alt="');
+				output.push(item.name);
+				output.push('" title="');
+				output.push(item.name);
+				output.push('"> <progress value="0" max="1" data-skin-goal="');
+				output.push(item.default_skin);
+				output.push('"></progress></a>');
+				getRecipesFor(item.id, function(err, recipes) {
+					if (err) {
+						throw err;
+					}
+
+					if (recipes.length === 0) {
+						throw 'no recipe for legendary?!';
+					}
+
+					addRecipe(recipes[0], '\n\t\t\t\t', nextItem);
 				});
-			});
+			}
+			nextPrecursor();
 		}
 		next();
 	});
