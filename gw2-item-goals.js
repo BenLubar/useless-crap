@@ -1,26 +1,34 @@
-if (location.search === "?debug") {
+var search = location.search ? location.search.substring(1).split(/&/g) : [];
+
+if (search.indexOf("debug") !== -1) {
 	window.onerror = function(message, source, lineno, colno, error) {
 		alert(lineno + ':' + colno + ':' + message);
 	};
 }
 
-(function() {
-	var apiKey = "806A2E66-D870-8E4F-BF35-840D64723775629D5348-A87D-4D4D-A90B-7BB3426B395C";
-	function request(path, callback) {
-		var xhr = new XMLHttpRequest();
-		xhr.open("GET", "https://api.guildwars2.com/v2/" + path + (path.indexOf("?") > -1 ? "&" : "?") + "access_token=" + apiKey);
-		xhr.onload = function() {
-			if (xhr.status >= 400) {
-				return callback(new Error(xhr.statusText));
-			}
-			callback(null, JSON.parse(xhr.responseText));
-		};
-		xhr.onerror = function() {
-			callback(new Error("an unknown error occurred"));
-		};
-		xhr.send();
+var apiKey = "806A2E66-D870-8E4F-BF35-840D64723775629D5348-A87D-4D4D-A90B-7BB3426B395C";
+search.forEach(function(q) {
+	if (q.indexOf('access_token=') === 0) {
+		apiKey = q.substring('access_token='.length);
 	}
+});
 
+function request(path, callback) {
+	var xhr = new XMLHttpRequest();
+	xhr.open("GET", "https://api.guildwars2.com/v2/" + path + (path.indexOf("?") > -1 ? "&" : "?") + "access_token=" + apiKey);
+	xhr.onload = function() {
+		if (xhr.status >= 400) {
+			return callback(new Error(xhr.statusText));
+		}
+		callback(null, JSON.parse(xhr.responseText));
+	};
+	xhr.onerror = function() {
+		callback(new Error("an unknown error occurred"));
+	};
+	xhr.send();
+}
+
+function init() {
 	var data = {currency: {}, item: {}, skin: {}, mini: {}, achievement: {}, upgrade: {}}, waiting = 8;
 
 	function done() {
@@ -326,4 +334,8 @@ if (location.search === "?debug") {
 
 		done();
 	});
-})();
+}
+
+if (!window.skipInit) {
+	init();
+}

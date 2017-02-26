@@ -1,4 +1,4 @@
-var legendaries = [30684,30685,30686,30687,30688,30689,30690,30691,30692,30693,30694,30695,30696,30697,30698,30699,30700,30701,30702,71383,72713,76158,78556,79588,79537,79562,79900,79894,79802];
+var legendaries = [30684,30685,30686,30687,30688,30689,30690,30691,30692,30693,30694,30695,30696,30697,30698,30699,30700,30701,30702,71383,72713,76158,78556,79588,79537,79562,79900,79894,79802,80524,80377,80488];
 
 function request(path, callback) {
 	var xhr = new XMLHttpRequest();
@@ -69,6 +69,40 @@ request('http://gw2profits.com/json/v3', function(err, forgeRecipes) {
 	if (err) {
 		throw err;
 	}
+
+	forgeRecipes.push(
+		{
+			"id": "temp_leg2riflegift",
+			"name": "Gift of Divinity",
+			"type": "Trophy",
+			"output_item_id": 80650,
+			"output_item_count": 1,
+			"output_item_count_range": "",
+			"disciplines": ["Mystic Forge"],
+			"achievement_id": 0,
+			"ingredients": [
+				{"item_id": 19622, "count": 1},
+				{"item_id": 76427, "count": 1},
+				{"item_id": 80380, "count": 100},
+				{"item_id": 79418, "count": 100}
+			]
+		},
+		{
+			"id": "temp_leg2rifle",
+			"name": "The HMS Divinity",
+			"type": "Rifle",
+			"output_item_id": 80488,
+			"output_item_count": 1,
+			"output_item_count_range": "",
+			"disciplines": ["Mystic Forge"],
+			"achievement_id": 0,
+			"ingredients": [
+				{"item_id": 80135, "count": 1},
+				{"item_id": 80650, "count": 1},
+				{"item_id": 71820, "count": 1},
+				{"item_id": 73239, "count": 1}
+			]
+		});
 
 	var fakeRecipes = {};
 	forgeRecipes.forEach(function(r) {
