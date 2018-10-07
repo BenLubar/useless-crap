@@ -267,7 +267,7 @@ async function init() {
 					var link = document.createElement('a');
 					link.href = g.parentNode.href;
 					link.appendChild(icon);
-					link.appendChild(document.createTextNode(' ' + g.parentNode.firstElementChild.title));
+					link.appendChild(document.createTextNode(' ' + g.parentNode.firstElementChild.alt));
 					var dt = document.createElement('dt');
 					dt.appendChild(link);
 					list.appendChild(dt);
