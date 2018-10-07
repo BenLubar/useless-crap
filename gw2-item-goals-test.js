@@ -549,13 +549,6 @@ async function init() {
 							}
 						}
 					}
-					var token = goal.getAttribute('data-account-key') || apiKeys[0];
-					var count = Math.min(data.currency[goal.getAttribute('data-currency-goal')][token] || 0, goal.max);
-					goal.value = count;
-					if (count !== 0) {
-						data.currency[goal.getAttribute('data-currency-goal')][token] -= count;
-						data.currency[goal.getAttribute('data-currency-goal')].total -= count;
-					}
 				} else if (goal.getAttribute('data-skin-goal')) {
 					var token = goal.getAttribute('data-account-key') || apiKeys[0];
 					goal.max = 1;
@@ -690,6 +683,25 @@ async function init() {
 				progress2.max = price.unit_price;
 				progress2.setAttribute("data-currency-goal", "1");
 			});
+
+			if (quantity > 0) {
+				var li = document.createElement("li");
+				ul.appendChild(li);
+				var a = document.createElement("a");
+				li.appendChild(a);
+				a.href = goal.parentNode.href;
+				var img = document.createElement("img");
+				a.appendChild(img);
+				img.src = goal.parentNode.firstElementChild.src;
+				img.alt = goal.parentNode.firstElementChild.alt;
+				img.title = img.alt;
+				a.appendChild(document.createTextNode(" "));
+				var progress = document.createElement("progress");
+				a.appendChild(progress);
+				progress.value = 0;
+				progress.max = quantity;
+				progress.setAttribute("data-item-goal", goal.getAttribute("data-item-goal"));
+			}
 		});
 		recurse(details, "[data-tp-prices] > li:not(.complete) > a");
 
