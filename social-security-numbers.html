@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>This webpage contains your social security number.</title>
+</head>
+<body>
+<ul></ul>
+<script>
+var ul = document.querySelector('ul');
+function add(a, b, c) {
+	var li = document.createElement('li');
+	li.textContent = ('00' + a).substr(-3) + '-' + ('0' + b).substr(-2) + '-' + ('000' + c).substr(-4);
+	ul.appendChild(li);
+
+	return new Promise(requestAnimationFrame);
+}
+(async function() {
+	for (var a = 1; a < 900; a++) {
+		if (a === 666) {
+			continue;
+		}
+
+		for (var b = 1; b < 100; b++) {
+			for (var c = 1; c < 10000; c++) {
+				await add(a, b, c);
+			}
+		}
+	}
+})();
+</script>
+</body>
+</html>
