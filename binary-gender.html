@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Binary Gender converter</title>
+<style>
+html {
+	background-color: #111;
+	color: #fff;
+	font: 1.2em sans-serif;
+}
+textarea {
+	background-color: #222;
+	color: #eee;
+	font: inherit;
+	border: 1px solid #666;
+}
+.err {
+	color: #ffdd44;
+}
+</style>
+</head>
+<body>
+<p><label for="gender">Gender:</label><br>
+<textarea id="gender" cols="40" rows="10">🕴</textarea></p>
+<p><label for="binary-gender">Binary Gender:</label><br>
+<textarea id="binary-gender" cols="40" rows="10">hhhh,,,, h,,hhhhh h,,h,h,h h,hh,h,,</textarea></p>
+<noscript><p>(JavaScript is required, sorry. Rest assured that your gender is valid.)</p></noscript>
+<script>
+var g = document.getElementById('gender');
+var bg = document.getElementById('binary-gender');
+g.addEventListener('input', encodeGender);
+bg.addEventListener('input', decodeGender);
+
+function encodeGender() {
+	bg.value = unescape(encodeURIComponent(g.value)).split('').map(toBinary).join(' ');
+	g.classList.remove('err');
+}
+function decodeGender() {
+	var bits = bg.value.replace(/[^h,01]/g, '').split('').map(function(ch) {
+		return ch === 'h' || ch === '1' ? 1 : 0;
+	});
+
+	var str = [];
+	while (bits.length) {
+		while (bits.length < 8) {
+			bits.push(0);
+		}
+
+		str.push('%');
+		str.push(nibble(bits));
+		bits = bits.slice(4);
+		str.push(nibble(bits));
+		bits = bits.slice(4);
+	}
+
+	try {
+		g.value = decodeURIComponent(str.join(''));
+		g.classList.remove('err');
+	} catch (ex) {
+		g.value = '!!! failed to decode binary gender !!!\n(nonbinary is still valid, though)';
+		g.classList.add('err');
+	}
+}
+
+function bit(v) {
+	return v ? 'h' : ',';
+}
+
+function nibble(bits) {
+	return ((bits[0] << 3) | (bits[1] << 2) | (bits[2] << 1) | (bits[3])).toString(16);
+}
+
+function toBinary(ch) {
+	var code = ch.charCodeAt(0);
+	return [
+		bit(code & 0x80),
+		bit(code & 0x40),
+		bit(code & 0x20),
+		bit(code & 0x10),
+		bit(code & 0x08),
+		bit(code & 0x04),
+		bit(code & 0x02),
+		bit(code & 0x01),
+	].join('');
+}
+</script>
+</body>
+</html>
