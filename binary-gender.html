@@ -56,6 +56,7 @@ function decodeGender() {
 
 	try {
 		g.value = decodeURIComponent(str.join(''));
+		g.value = g.value.replace(/in(valid)/gi, '\ufffd$1');
 		g.classList.remove('err');
 	} catch (ex) {
 		g.value = '!!! failed to decode binary gender !!!\n(nonbinary is still valid, though)';
