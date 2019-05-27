@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Perfect Web App</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<style>
+html {
+	background: #eee;
+	color: #000;
+	font: 1.5em/1.3 serif;
+}
+body {
+	max-width: 35rem;
+	margin: 1rem auto;
+}
+h1, h2, h3, h4, h5, h6 {
+	text-align: center;
+	font-family: sans-serif;
+	margin: 0;
+}
+.features {
+	padding-inline-start: 0;
+	list-style-type: none;
+	font-size: 0.85rem;
+	margin: 0 1.5rem;
+}
+@media all and (min-width: 35rem) {
+	.features {
+		column-count: 2;
+	}
+}
+.features > li {
+	padding-top: 1rem;
+}
+	</style>
+</head>
+<body>
+	<h1>This is a <em>Perfect</em> Web Application</h1>
+	<ul class="features">
+		<li>It loads quickly, even on slow connections.</li>
+		<li>It is accessible to screen readers.</li>
+		<li>It does not load unnecessary resources.</li>
+		<li>It does not rely on external services for core functionality.</li>
+		<li>It complies with the <a href="https://ec.europa.eu/commission/priorities/justice-and-fundamental-rights/data-protection/2018-reform-eu-data-protection-rules_en" title="General Data Protection Regulation">GDPR</a>.</li>
+		<li>It does not use low-contrast colors.</li>
+		<li>Its core functionality works in all major web browsers.</li>
+		<li>It does not use JavaScript to do things JavaScript is not required to do.</li>
+		<li>It is fully functional on mobile devices.</li>
+		<li>It does not reimplement browser functionality like scrolling.</li>
+		<li>It does not change what is on the page without user interaction.</li>
+	</ul>
+	<p>To create your own perfect web application, start with an empty HTML file, then add the features you want. Breaking any of the features of this perfect web application should be considered a top-priority bug.</p>
+</body>
+</html>
