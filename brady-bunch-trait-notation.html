@@ -198,6 +198,10 @@ input, select {
 
 	function updateFields() {
 		professionField.value = tmpl.data[0];
+		if (!professionField.value) {
+			invalid = true;
+			professionField.value = professionField.firstChild.value;
+		}
 		var prof = profs[professions[professionField.value]];
 		professionField.previousSibling.src = prof.icon_big;
 
@@ -209,6 +213,10 @@ input, select {
 				opt.value = prof.specializations[index];
 			});
 			field.value = tmpl.data[offset];
+			if (!field.value) {
+				invalid = true;
+				field.value = field.firstChild.value;
+			}
 
 			field.previousSibling.src = specs[field.value].icon;
 		});
@@ -228,9 +236,21 @@ input, select {
 				opt.value = trait_id;
 			});
 			field.value = tmpl.data[offset];
+			if (!field.value) {
+				invalid = true;
+				field.value = field.firstChild.value;
+			}
 
 			field.previousSibling.src = traits[field.value].icon;
 		});
+
+		if (invalid) {
+			document.querySelectorAll("[data-offset]").forEach(function(el) {
+				var offset = parseInt(el.getAttribute("data-offset"), 10);
+				tmpl.data[offset] = el.value;
+			});
+			templateField.value = tmpl.toString();
+		}
 	}
 	updateFields();
 
