@@ -200,6 +200,8 @@ input, select {
 	});
 
 	function updateFields() {
+		var invalid = false;
+
 		professionField.value = tmpl.data[0];
 		if (!professionField.value) {
 			invalid = true;
