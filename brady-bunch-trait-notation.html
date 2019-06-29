@@ -93,6 +93,18 @@ input, select {
 			xhr.addEventListener("load", function() {
 				var data = {};
 				xhr.response.forEach(function(v) {
+					// Preload icons.
+					var link = document.createElement("link");
+					link.rel = "preload";
+					link.as = "image";
+					link.crossOrigin = "anonymous";
+					if (v.icon_big) {
+						link.href = v.icon_big;
+					} else {
+						link.href = v.icon;
+					}
+					document.querySelector("head").appendChild(link);
+
 					data[v.id] = v;
 				});
 				resolve(data);
@@ -129,7 +141,7 @@ input, select {
 		this.data = new Uint16Array(this.buffer, 2);
 	}
 	Template.prototype.toString = function() {
-		return "[*" + btoa(new Uint8Array(this.buffer, 1)) + "]";
+		return "[*" + btoa(String.fromCharCode.apply(String, new Uint8Array(this.buffer, 1))) + "]";
 	};
 
 	var form = document.querySelector("form");
@@ -167,6 +179,7 @@ input, select {
 
 		var img = document.createElement("img");
 		img.alt = "";
+		img.crossOrigin = "anonymous";
 		img.classList.add("icon");
 		img.width = 64;
 		img.height = 64;
@@ -206,27 +219,45 @@ input, select {
 		if (!professionField.value) {
 			invalid = true;
 			professionField.value = professionField.firstChild.value;
+			tmpl.data[0] = professionField.value;
 		}
 		var prof = profs[professions[professionField.value]];
 		professionField.previousSibling.src = prof.icon_big;
 
-		specFields.forEach(function(field, i) {
+		var usedSpecs = {"": true};
+		specFields.forEach(function(field) {
 			var offset = parseInt(field.getAttribute("data-offset"), 10);
 
 			field.querySelectorAll("option").forEach(function(opt) {
 				var index = parseInt(opt.getAttribute("data-index"), 10);
 				opt.value = prof.specializations[index];
+				opt.disabled = false;
+				for (var i = 1; i <= 3; i++) {
+					if (offset === i) {
+						continue;
+					}
+					if (tmpl.data[i] === prof.specializations[index]) {
+						opt.disabled = false;
+					}
+				}
 			});
 			field.value = tmpl.data[offset];
-			if (!field.value) {
+			if (usedSpecs[field.value]) {
 				invalid = true;
-				field.value = field.firstChild.value;
+				for (var el = field.firstChild; el; el = el.nextSibling) {
+					if (!usedSpecs[el.value]) {
+						field.value = el.value;
+						break;
+					}
+				}
+				tmpl.data[offset] = field.value;
 			}
+			usedSpecs[field.value] = true;
 
 			field.previousSibling.src = specs[field.value].icon;
 		});
 
-		traitFields.forEach(function(field, i) {
+		traitFields.forEach(function(field) {
 			var spec = specs[tmpl.data[parseInt(field.getAttribute("data-spec"), 10)]];
 			var tier = parseInt(field.getAttribute("data-tier"), 10);
 
@@ -244,34 +275,17 @@ input, select {
 			if (!field.value) {
 				invalid = true;
 				field.value = field.firstChild.value;
+				tmpl.data[offset] = field.value;
 			}
 
 			field.previousSibling.src = traits[field.value].icon;
 		});
 
 		if (invalid) {
-			document.querySelectorAll("[data-offset]").forEach(function(el) {
-				var offset = parseInt(el.getAttribute("data-offset"), 10);
-				tmpl.data[offset] = el.value;
-			});
 			templateField.value = tmpl.toString();
 		}
 	}
 	updateFields();
-
-	if (tmpl.kind === "t") {
-		var prof = profs[professions[tmpl.data[0]]];
-		console.log(bradys[professionMap[tmpl.data[0]]], prof.icon);
-
-		for (var i = 0; i < 3; i++) {
-			var spec = specs[tmpl.data[1 + i]];
-			console.log(bradys[specMap[prof.specializations.indexOf(spec.id)]], spec.icon);
-			for (var j = 0; j < 3; j++) {
-				var trait = traits[tmpl.data[4 + i * 3 + j]];
-				console.log(bradys[traitMap[j][trait.order]], trait.icon);
-			}
-		}
-	}
 
 	loading.parentNode.removeChild(loading);
 })();
