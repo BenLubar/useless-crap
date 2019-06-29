@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>ArcDPS / Brady Bunch converter</title>
+<style>
+html {
+	background-color: #222;
+	color: #fff;
+	font-family: sans-serif;
+}
+.loading {
+	font-size: 4em;
+	position: absolute;
+	margin: 0;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+.loading ~ form {
+	display: none;
+}
+form {
+	font-size: 1.5em;
+	max-width: 48rem;
+	margin: 2rem auto;
+	text-align: center;
+}
+fieldset {
+	margin: 1rem 0;
+	border: 1px solid #000;
+}
+.icon {
+	margin: 0 0.25em;
+	vertical-align: middle;
+}
+input, select {
+	color: #fff;
+	background-color: #000;
+	border: 1px solid #888;
+	font: inherit;
+}
+#arcdps_template {
+	font-family: monospace;
+	user-select: all;
+	text-align: center;
+}
+</style>
+</head>
+<body>
+<p class="loading">Loading</p>
+<noscript>Sorry, you need JavaScript to use this monstrosity.</noscript>
+<form>
+<label for="arcdps_template">ArcDPS Trait Template:</label>
+<input id="arcdps_template" type="text" value="[*dAgANQAyACIAkgM9A1UDawN+A30D5AexB+UH]" pattern="^\[\*d[A-P][0-9a-zA-Z+/]{34}\]$" required size="39">
+<fieldset>
+<select id="profession" data-offset="0"></select>
+</fieldset>
+<fieldset>
+<select class="specialization" data-offset="1" data-elite="0"></select>
+<select class="trait" data-offset="4" data-spec="1" data-tier="1"></select>
+<select class="trait" data-offset="5" data-spec="1" data-tier="2"></select>
+<select class="trait" data-offset="6" data-spec="1" data-tier="3"></select>
+</fieldset>
+<fieldset>
+<select class="specialization" data-offset="2" data-elite="0"></select>
+<select class="trait" data-offset="7" data-spec="2" data-tier="1"></select>
+<select class="trait" data-offset="8" data-spec="2" data-tier="2"></select>
+<select class="trait" data-offset="9" data-spec="2" data-tier="3"></select>
+</fieldset>
+<fieldset>
+<select class="specialization" data-offset="3" data-elite="1"></select>
+<select class="trait" data-offset="10" data-spec="3" data-tier="1"></select>
+<select class="trait" data-offset="11" data-spec="3" data-tier="2"></select>
+<select class="trait" data-offset="12" data-spec="3" data-tier="3"></select>
+</fieldset>
+</form>
+<script>
+(async function() {
+	var bradys = ["Tiger", "Cindy", "Mike", "Bobby", "Jan", "Alice", "Peter", "Marcia", "Carol", "Greg"];
+	var professions = ["", "Guardian", "Warrior", "Engineer", "Ranger", "Thief", "Elementalist", "Mesmer", "Necromancer", "Revenant"];
+	var professionMap = [0, 8, 6, 7, 4, 5, 3, 2, 1, 9];
+	var specMap = [7, 4, 1, 8, 5, 2, 9, 6, 3];
+	var traitMap = [[0, 7, 4, 1], [0, 8, 5, 2], [0, 9, 6, 3]];
+	function apiRequest(endpoint) {
+		return new Promise(function(resolve, reject) {
+			var xhr = new XMLHttpRequest();
+			xhr.open("GET", "https://api.guildwars2.com/v2/" + endpoint + "?ids=all&v=2019-06-17");
+			xhr.responseType = "json";
+			xhr.addEventListener("load", function() {
+				var data = {};
+				xhr.response.forEach(function(v) {
+					data[v.id] = v;
+				});
+				resolve(data);
+			});
+			xhr.addEventListener("error", function() {
+				reject();
+			});
+			xhr.send();
+		});
+	}
+	var profs = apiRequest("professions");
+	var specs = apiRequest("specializations");
+	var traits = apiRequest("traits");
+	var loading = document.querySelector(".loading");
+	profs = await profs;
+	loading.textContent += ".";
+	specs = await specs;
+	loading.textContent += ".";
+	traits = await traits;
+	loading.textContent += ".";
+
+	function Template(s) {
+		s = String(s);
+		if (!s.startsWith("[*") || !s.endsWith("]")) {
+			throw new Error("invalid template formatting");
+		}
+
+		var b = Uint8Array.from("*" + atob(s.substring(2, s.length - 1)), function(ch) {
+			return ch.charCodeAt(0) & 0xFF;
+		});
+
+		this.buffer = b.buffer;
+		this.kind = String.fromCharCode(b[1]);
+		this.data = new Uint16Array(this.buffer, 2);
+	}
+	Template.prototype.toString = function() {
+		return "[*" + btoa(new Uint8Array(this.buffer, 1)) + "]";
+	};
+
+	var form = document.querySelector("form");
+	form.addEventListener("submit", function(e) {
+		e.preventDefault();
+	});
+
+	var templateField = document.querySelector("#arcdps_template");
+	var tmpl = new Template(templateField.value);
+	templateField.addEventListener("change", function() {
+		if (!templateField.reportValidity()) {
+			return;
+		}
+
+		tmpl = new Template(templateField.value);
+		updateFields();
+	});
+	templateField.addEventListener("focus", function() {
+		templateField.select();
+	});
+
+	var professionField = document.querySelector("#profession");
+	for (var i = 1; i < 10; i++) {
+		var opt = document.createElement("option");
+		opt.value = i;
+		opt.textContent = bradys[professionMap[i]];
+		professionField.appendChild(opt);
+	}
+
+	var specFields = [].slice.call(document.querySelectorAll(".specialization"));
+	var traitFields = [].slice.call(document.querySelectorAll(".trait"));
+
+	[professionField].concat(specFields, traitFields).forEach(function(field) {
+		var offset = parseInt(field.getAttribute("data-offset"), 10);
+
+		var img = document.createElement("img");
+		img.alt = "";
+		img.classList.add("icon");
+		img.width = 64;
+		img.height = 64;
+		field.parentNode.insertBefore(img, field);
+
+		field.addEventListener("change", function() {
+			tmpl.data[offset] = field.value;
+			templateField.value = tmpl.toString();
+			updateFields();
+		});
+	});
+
+	specFields.forEach(function(field) {
+		var count = field.getAttribute("data-elite") === "0" ? 5 : profs[professions[1]].specializations.length;
+		for (var i = 0; i < count; i++) {
+			var opt = document.createElement("option");
+			opt.setAttribute("data-index", i);
+			opt.textContent = bradys[specMap[i]];
+			field.appendChild(opt);
+		}
+	});
+
+	traitFields.forEach(function(field) {
+		var tier = parseInt(field.getAttribute("data-tier"), 10);
+		for (var i = 0; i < 3; i++) {
+			var opt = document.createElement("option");
+			opt.setAttribute("data-index", i);
+			opt.textContent = bradys[traitMap[tier - 1][i + 1]];
+			field.appendChild(opt);
+		}
+	});
+
+	function updateFields() {
+		professionField.value = tmpl.data[0];
+		var prof = profs[professions[professionField.value]];
+		professionField.previousSibling.src = prof.icon_big;
+
+		specFields.forEach(function(field, i) {
+			var offset = parseInt(field.getAttribute("data-offset"), 10);
+
+			field.querySelectorAll("option").forEach(function(opt) {
+				var index = parseInt(opt.getAttribute("data-index"), 10);
+				opt.value = prof.specializations[index];
+			});
+			field.value = tmpl.data[offset];
+
+			field.previousSibling.src = specs[field.value].icon;
+		});
+
+		traitFields.forEach(function(field, i) {
+			var spec = specs[tmpl.data[parseInt(field.getAttribute("data-spec"), 10)]];
+			var tier = parseInt(field.getAttribute("data-tier"), 10);
+
+			var offset = parseInt(field.getAttribute("data-offset"), 10);
+
+			field.querySelectorAll("option").forEach(function(opt) {
+				var index = parseInt(opt.getAttribute("data-index"), 10);
+				var trait_id = spec.major_traits.find(function(t) {
+					var trait = traits[t];
+					return trait.tier === tier && trait.order === index;
+				});
+				opt.value = trait_id;
+			});
+			field.value = tmpl.data[offset];
+
+			field.previousSibling.src = traits[field.value].icon;
+		});
+	}
+	updateFields();
+
+	if (tmpl.kind === "t") {
+		var prof = profs[professions[tmpl.data[0]]];
+		console.log(bradys[professionMap[tmpl.data[0]]], prof.icon);
+
+		for (var i = 0; i < 3; i++) {
+			var spec = specs[tmpl.data[1 + i]];
+			console.log(bradys[specMap[prof.specializations.indexOf(spec.id)]], spec.icon);
+			for (var j = 0; j < 3; j++) {
+				var trait = traits[tmpl.data[4 + i * 3 + j]];
+				console.log(bradys[traitMap[j][trait.order]], trait.icon);
+			}
+		}
+	}
+
+	loading.parentNode.removeChild(loading);
+})();
+</script>
+</body>
+</html>
