@@ -5,7 +5,7 @@
 <link rel="preload" as="fetch" href="https://api.guildwars2.com/v2/professions?ids=all&v=2019-06-17" crossorigin="anonymous">
 <link rel="preload" as="fetch" href="https://api.guildwars2.com/v2/specializations?ids=all&v=2019-06-17" crossorigin="anonymous">
 <link rel="preload" as="fetch" href="https://api.guildwars2.com/v2/traits?ids=all&v=2019-06-17" crossorigin="anonymous">
-<link rel="preconnect" href="https://render.guildwars2.com" crossorigin="anonymous">
+<link rel="preconnect" href="https://darthmaim-cdn.de" crossorigin="anonymous">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 html {
@@ -99,6 +99,9 @@ window.addEventListener("error", function(e) {
 	var professionMap = [0, 8, 6, 7, 4, 5, 3, 2, 1, 9];
 	var specMap = [7, 4, 1, 8, 5, 2, 9, 6, 3];
 	var traitMap = [[0, 7, 4, 1], [0, 8, 5, 2], [0, 9, 6, 3]];
+	function swapCDN(url) {
+		return url.replace(/^https:\/\/render\.guildwars2\.com\/file\/([0-9A-F]+)\/([0-9]+)\.png$/, "https://darthmaim-cdn.de/gw2treasures/icons/$1/$2-64px.png");
+	}
 	function apiRequest(endpoint) {
 		return new Promise(function(resolve, reject) {
 			var xhr = new XMLHttpRequest();
@@ -107,12 +110,23 @@ window.addEventListener("error", function(e) {
 			xhr.addEventListener("load", function() {
 				var data = {};
 				xhr.response.forEach(function(v) {
+					if (endpoint === "traits" && v.slot === "Minor") {
+						// don't need icon
+						data[v.id] = v;
+						return;
+					}
+
+					if (v.icon_big) {
+						v.icon_big = swapCDN(v.icon_big);
+					}
+					v.icon = swapCDN(v.icon);
+
 					// Preload icons.
 					var link = document.createElement("link");
 					link.rel = "prefetch";
 					link.as = "image";
 					link.crossOrigin = "anonymous";
-					if (v.icon_big) {
+					if (endpoint === "professions") {
 						link.href = v.icon_big;
 					} else {
 						link.href = v.icon;
