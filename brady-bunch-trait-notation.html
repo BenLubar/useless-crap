@@ -5,6 +5,7 @@
 <link rel="preload" as="fetch" href="https://api.guildwars2.com/v2/professions?ids=all&v=2019-06-17" crossorigin="anonymous">
 <link rel="preload" as="fetch" href="https://api.guildwars2.com/v2/specializations?ids=all&v=2019-06-17" crossorigin="anonymous">
 <link rel="preload" as="fetch" href="https://api.guildwars2.com/v2/traits?ids=all&v=2019-06-17" crossorigin="anonymous">
+<link rel="preconnect" href="https://render.guildwars2.com" crossorigin="anonymous">
 <style>
 html {
 	background-color: #222;
@@ -107,7 +108,7 @@ window.addEventListener("error", function(e) {
 				xhr.response.forEach(function(v) {
 					// Preload icons.
 					var link = document.createElement("link");
-					link.rel = "preload";
+					link.rel = "prefetch";
 					link.as = "image";
 					link.crossOrigin = "anonymous";
 					if (v.icon_big) {
