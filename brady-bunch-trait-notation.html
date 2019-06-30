@@ -240,16 +240,8 @@ window.addEventListener("error", function(e) {
 
 			field.querySelectorAll("option").forEach(function(opt) {
 				var index = parseInt(opt.getAttribute("data-index"), 10);
-				opt.value = prof.specializations[index];
 				opt.disabled = false;
-				for (var i = 1; i <= 3; i++) {
-					if (offset === i) {
-						continue;
-					}
-					if (tmpl.data[i] === prof.specializations[index]) {
-						opt.disabled = false;
-					}
-				}
+				opt.value = prof.specializations[index];
 			});
 			field.value = tmpl.data[offset];
 			if (usedSpecs[field.value]) {
@@ -265,6 +257,22 @@ window.addEventListener("error", function(e) {
 			usedSpecs[field.value] = true;
 
 			field.previousSibling.src = specs[field.value].icon;
+		});
+
+		specFields.forEach(function(field) {
+			var offset = parseInt(field.getAttribute("data-offset"), 10);
+
+			field.querySelectorAll("option").forEach(function(opt) {
+				var index = parseInt(opt.getAttribute("data-index"), 10);
+				for (var i = 1; i <= 3; i++) {
+					if (offset === i) {
+						continue;
+					}
+					if (tmpl.data[i] === prof.specializations[index]) {
+						opt.disabled = true;
+					}
+				}
+			});
 		});
 
 		traitFields.forEach(function(field) {
