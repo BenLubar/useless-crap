@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Tyria Time</title>
+		<style>
+			body {
+				margin: 0;
+			}
+			video {
+				width: 100vw;
+				height: 100vh;
+				object-fit: scale-down;
+				background: #000;
+			}
+		</style>
+	</head>
+	<body>
+		<video src="tyria-time.mp4" muted loop></video>
+		<script>
+			function syncClock() {
+				var clock = document.querySelector("video");
+				clock.currentTime = (Date.now() % (2 * 60 * 60 * 1000)) / 1000;
+				clock.play();
+			}
+			syncClock();
+			addEventListener("focus", syncClock);
+		</script>
+	</body>
+</html>
