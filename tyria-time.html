@@ -24,6 +24,10 @@
 			}
 			syncClock();
 			addEventListener("focus", syncClock);
+			document.querySelector("video").addEventListener("click", function() {
+				syncClock();
+				this.requestPictureInPicture();
+			});
 		</script>
 	</body>
 </html>
