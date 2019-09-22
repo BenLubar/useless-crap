@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Ben Lubar&rsquo;s Countdown Doodad</title>
+<link rel="stylesheet" href="gw2fonts.css">
+<style>
+html, body {
+	background-color: transparent;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+html {
+	height: 100%;
+	justify-content: center;
+}
+#setup {
+	background-color: #fff;
+	color: #000;
+}
+div {
+	font: 4rem Menomonia;
+	text-align: center;
+	visibility: collapse;
+}
+.num, .sep {
+	font-size: 8rem;
+}
+.label {
+	font-size: 2rem;
+}
+#counter {
+	font-family: CronosPro;
+	display: grid;
+}
+.num, .sep {
+	grid-row: 1;
+}
+.sep {
+	padding: 0 1.5rem;
+}
+.label {
+	grid-row: 2;
+}
+.days {
+	grid-column: 1;
+}
+.hours.sep {
+	grid-column: 2;
+}
+.hours {
+	grid-column: 3;
+}
+.minutes.sep {
+	grid-column: 4;
+}
+.minutes {
+	grid-column: 5;
+}
+.seconds.sep {
+	grid-column: 6;
+}
+.seconds {
+	grid-column: 7;
+}
+.msec.sep {
+	grid-column: 8;
+}
+.msec {
+	grid-column: 9;
+}
+#text-before {
+	align-content: end;
+}
+#text-after {
+	align-content: start;
+}
+.no-days .days, .no-days .hours.sep {
+	display: none;
+}
+.no-msec .msec {
+	display: none;
+}
+</style>
+</head>
+<body>
+<noscript>(This requires JavaScript, sorry.)</noscript>
+<form hidden method="get" action id="setup">
+<p><label>Color:<br><input required type="color" name="color"></label></p>
+<p><label>Text Above:<br><input type="text" name="above"></label></p>
+<p><label>Target Date:<br><input required type="datetime-local" name="target"></label></p>
+<p><label>Text Below:<br><input type="text" name="below"></label></p>
+<p><label><input type="checkbox" name="hide-days" checked> Hide Days</label></p>
+<p><label><input type="checkbox" name="hide-msec" checked> Hide Milliseconds</label></p>
+<p><button type="submit">Start Countdown</button></p>
+</form>
+<div id="text-above"></div>
+<div id="counter">
+<span class="num days">00</span>
+<span class="label days">days</span>
+<span class="sep hours">&nbsp;</span>
+<span class="num hours">00</span>
+<span class="label hours">hrs</span>
+<span class="sep minutes">:</span>
+<span class="num minutes">00</span>
+<span class="label minutes">min</span>
+<span class="sep seconds">:</span>
+<span class="num seconds">00</span>
+<span class="label seconds">sec</span>
+<span class="sep msec">.</span>
+<span class="num msec">000</span>
+<span class="label msec"></span>
+</div>
+<div id="text-below"></div>
+<script>
+(function(args) {
+if (!args.has("target") || !args.has("color")) {
+	document.querySelector("#setup").hidden = false;
+	return;
+}
+
+if (args.has("hide-days")) {
+	document.body.classList.add("no-days");
+}
+if (args.has("hide-msec")) {
+	document.body.classList.add("no-msec");
+}
+document.querySelectorAll("div").forEach(function(el) {
+	el.style.color = args.get("color");
+	el.style.visibility = "visible";
+});
+document.querySelector("#text-above").textContent = args.get("above") || "";
+document.querySelector("#text-below").textContent = args.get("below") || "";
+
+var goal = new Date(args.get("target")).getTime();
+doCountdown();
+
+function countdownOver() {
+	document.querySelectorAll("div").forEach(function(el) {
+		el.hidden = true;
+	});
+}
+function setNum(type, total, div, mod, digits) {
+	var num = Math.floor(total / div) % mod;
+	num = num.toString().padStart(digits, "0");
+
+	document.querySelector(".num." + type).textContent = num;
+}
+async function doCountdown() {
+	for (;;) {
+		var remaining = goal - Date.now();
+		if (remaining <= 0) {
+			countdownOver();
+			return;
+		}
+
+		setNum("msec", remaining, 1, 1e3, 3);
+		setNum("seconds", remaining, 1e3, 60, 2);
+		setNum("minutes", remaining, 60e3, 60, 2);
+		setNum("hours", remaining, 60 * 60e3, 24, 2);
+		setNum("days", remaining, 24 * 60 * 60e3, Infinity, 1);
+		await nextFrame();
+	}
+}
+async function nextFrame() {
+	return new Promise(requestAnimationFrame);
+}
+})(new URLSearchParams(location.search))
+</script>
+</body>
+</html>
