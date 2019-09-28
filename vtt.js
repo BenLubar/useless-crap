@@ -13,7 +13,8 @@
 		}
 
 		var track = el.track;
-		[].forEach.call(track.cues, function(cue) {
+		var cues = [].slice.call(track.cues);
+		cues.forEach(function(cue) {
 			var parts = cue.text.split(karaoke);
 			if (parts.length <= 1) {
 				return;
