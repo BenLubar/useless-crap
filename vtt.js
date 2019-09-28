@@ -2,8 +2,9 @@
 	"use strict";
 
 	var style = document.createElement("style");
+	style.textContent = "::cue(.hidden) { visibility: hidden; }";
 	document.body.appendChild(style);
-	style.sheet.insertRule('::cue(.hidden) { visibility: hidden; }');
+
 	var karaoke = /<(?:(?:([0-9]{2,}):)?([0-5][0-9]):)?([0-5][0-9]\.[0-9]{3})>/g;
 	document.addEventListener("load", function(e) {
 		var el = e.target;
