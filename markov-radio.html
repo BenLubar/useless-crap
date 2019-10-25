@@ -86,6 +86,9 @@ function markov() {
 	}
 	return words.join(' ');
 }
+window.addEventListener('beforeunload', function() {
+	speechSynthesis.cancel();
+});
 </script>
 </body>
 </html>
