@@ -34,22 +34,8 @@
 function rand(n) {
 	return Math.floor(Math.random() * n);
 }
-var voices;
-function randomizeVoices() {
-	voices = [].slice.call(speechSynthesis.getVoices());
-	var nonESpeak = voices.filter(function(v) {
-		return v.name.indexOf('eSpeak') === -1;
-	});
-	if (nonESpeak.length >= 3) {
-		voices = nonESpeak;
-	}
-}
-randomizeVoices();
-speechSynthesis.addEventListener('voiceschanged', randomizeVoices);
 function randSay(text) {
 	var u = new SpeechSynthesisUtterance(text);
-	u.lang = 'en';
-	u.voice = voices[rand(voices.length)];
 	u.volume = 0.6; // MY EARS
 	speechSynthesis.speak(u);
 }
