@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Mastodon Location Selector</title>
+<style>
+#location:checked ~ #portland {
+	display: none;
+}
+#location:not(:checked) ~ #seattle {
+	display: none;
+}
+</style>
+</head>
+<body>
+<label for="location">Location: <input type="checkbox" id="location"> <span id="portland">Portland</span><span id="seattle">Seattle</span></label>
+</body>
+</html>
