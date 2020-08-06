@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Recorder</title>
+<style>
+button {
+	font-size: 4rem;
+}
+</head>
+<body>
+<script>
+var recStream, recRec;
+var startButton = document.createElement("button");
+var stopButton = document.createElement("button");
+startButton.textContent = "Start Recording";
+stopButton.textContent = "Stop Recording";
+startButton.addEventListener("click", async function(e) {
+	e.preventDefault();
+	recStream = await navigator.mediaDevices.requestDisplayMedia({
+		audio: true,
+		video: true
+	});
+	recRec = new MediaRecorder(recStream);
+	recRec.addEventListener("dataavailable", function(e) {
+		var url = URL.createObjectURL(e.data);
+		var a = document.createElement("a");
+		a.href = url;
+		a.download = true;
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+		URL.revokeObjectURL(url);
+	});
+	recRec.start();
+	document.body.removeChild(startButton);
+	document.body.appendChild(stopButton);
+});
+stopButton.addEventListener("click", function(e) {
+	e.preventDefault();
+	recRec.stop();
+	[].forEach.call(recStream.getTracks(), function(track) {
+		track.stop();
+	});
+	document.body.removeChild(stopButton);
+	document.body.appendChild(startButton);
+});
+</script>
+</body>
+</html>
