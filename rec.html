@@ -11,6 +11,9 @@ button {
 </head>
 <body>
 <script>
+var format = MediaRecorder.isTypeSupported("video/mp4") ? "mp4" :
+	MediaRecorder.isTypeSupported("video/webm") ? "webm" :
+	"unknown";
 var recStream, recRec;
 var startButton = document.createElement("button");
 var stopButton = document.createElement("button");
@@ -21,14 +24,14 @@ startButton.addEventListener("click", async function(e) {
 	recStream = await navigator.mediaDevices.getDisplayMedia({
 		audio: true,
 		video: true,
-		mimeType: "video/mp4"
+		mimeType: "video/" + format
 	});
 	recRec = new MediaRecorder(recStream);
 	recRec.addEventListener("dataavailable", function(e) {
 		var url = URL.createObjectURL(e.data);
 		var a = document.createElement("a");
 		a.href = url;
-		a.download = "recording.mp4";
+		a.download = "recording." + format;
 		document.body.appendChild(a);
 		a.click();
 		document.body.removeChild(a);
