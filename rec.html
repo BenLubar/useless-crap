@@ -20,14 +20,15 @@ startButton.addEventListener("click", async function(e) {
 	e.preventDefault();
 	recStream = await navigator.mediaDevices.getDisplayMedia({
 		audio: true,
-		video: true
+		video: true,
+		mimeType: "video/mp4"
 	});
 	recRec = new MediaRecorder(recStream);
 	recRec.addEventListener("dataavailable", function(e) {
 		var url = URL.createObjectURL(e.data);
 		var a = document.createElement("a");
 		a.href = url;
-		a.download = true;
+		a.download = "recording.mp4";
 		document.body.appendChild(a);
 		a.click();
 		document.body.removeChild(a);
