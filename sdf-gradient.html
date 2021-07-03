@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+#c1 {
+	float: left;
+}
+#c2 {
+	display: block;
+}
+#pan {
+	width: 256px;
+	height: 256px;
+	float: left;
+	position: relative;
+	overflow: hidden;
+}
+#c3 {
+	pointer-events: none;
+}
+#pan:not(:hover) #c3 {
+	width: 256px;
+	height: 256px;
+}
+#pan:hover #c3 {
+	width: 1024px;
+	height: 1024px;
+	position: absolute;
+}
+form {
+	width: 256px;
+	height: 128px;
+	margin-left: 256px;
+	padding: 8px;
+	box-sizing: border-box;
+}
+label {
+	display: inline-block;
+	width: 64px;
+}
+</style>
+</head>
+<body>
+<canvas id="c1" width="256" height="256"></canvas>
+<canvas id="c2" width="256" height="256"></canvas>
+<div id="pan"><canvas id="c3" width="1024" height="1024"></canvas></div>
+<form>
+<br><label for="color">Color </label><input id="color" type="color" value="#ffaa44">
+<br><label for="alpha">Alpha </label><input id="alpha" type="range" value="255" min="0" max="255">
+<br><label for="size">Size </label><input id="size" type="range" value="32" min="4" max="128">
+</form>
+<canvas id="ccolor" width="128" height="128"></canvas>
+<canvas id="calpha" width="128" height="128"></canvas>
+<script>
+var pan = document.getElementById("pan");
+var color = document.getElementById("color");
+var alpha = document.getElementById("alpha");
+var size = document.getElementById("size");
+var c1 = document.getElementById("c1").getContext("2d");
+var c2 = document.getElementById("c2").getContext("2d");
+var c3 = document.getElementById("c3").getContext("webgl");
+var ccolor = document.getElementById("ccolor").getContext("2d");
+var calpha = document.getElementById("calpha").getContext("2d");
+
+var gradient = c1.createRadialGradient(128, 128, 0, 128, 128, 128);
+gradient.addColorStop(0.0, "#fff");
+gradient.addColorStop(1.0, color.value);
+c1.fillStyle = gradient;
+c1.fillRect(0, 0, 256, 256);
+c1.globalAlpha = 0.05;
+gradient = c2.createRadialGradient(128, 128, 0, 128, 128, 128);
+gradient.addColorStop(0.0, "#000");
+gradient.addColorStop(0.5, "#fff");
+gradient.addColorStop(1.0, "#000");
+c2.fillStyle = gradient;
+c2.fillRect(0, 0, 256, 256);
+c2.globalAlpha = 0.05;
+
+function makeGradient(ctx, c, c2) {
+	var gradient = ctx.createRadialGradient(64, 64, 0, 64, 64, size.valueAsNumber / 2);
+	gradient.addColorStop(0.0, c);
+	gradient.addColorStop(1.0, c2);
+	return gradient;
+}
+
+function updateCursors() {
+	ccolor.fillStyle = makeGradient(ccolor, color.value, color.value + "00");
+	calpha.fillStyle = makeGradient(calpha, ["rgb(", ", ", ", ", ")"].join(alpha.value), ["rgba(", ", ", ", ", ", 0)"].join(alpha.value));
+	ccolor.clearRect(0, 0, 128, 128);
+	calpha.clearRect(0, 0, 128, 128);
+	ccolor.fillRect(0, 0, 128, 128);
+	calpha.fillRect(0, 0, 128, 128);
+	c1.canvas.style.cursor = "url(" + ccolor.canvas.toDataURL() + ") 64 64, crosshair";
+	c2.canvas.style.cursor = "url(" + calpha.canvas.toDataURL() + ") 64 64, crosshair";
+}
+updateCursors();
+
+color.addEventListener("input", updateCursors);
+alpha.addEventListener("input", updateCursors);
+size.addEventListener("input", updateCursors);
+
+c3.clearColor(0, 0, 0, 0);
+c3.enable(c3.BLEND);
+c3.blendFunc(c3.SRC_ALPHA, c3.ONE_MINUS_SRC_ALPHA);
+
+var vert = c3.createShader(c3.VERTEX_SHADER);
+var frag = c3.createShader(c3.FRAGMENT_SHADER);
+c3.getExtension("OES_standard_derivatives");
+c3.shaderSource(vert, `attribute vec2 in_coord;
+attribute vec2 in_quadrant;
+varying vec2 coord;
+
+void main() {
+	coord = vec2(
+		in_coord.x * 0.5 + in_quadrant.x * 0.5,
+		in_coord.y * 0.5 + in_quadrant.y * 0.5
+	);
+	gl_Position = vec4(in_coord.x * 2.0 - 1.0, 1.0 - in_coord.y * 2.0, 0.0, 1.0);
+}
+`);
+c3.shaderSource(frag, `#extension GL_OES_standard_derivatives : enable
+precision highp float;
+
+uniform sampler2D tex1;
+uniform sampler2D tex2;
+varying vec2 coord;
+
+void main() {
+	vec4 in_color = texture2D(tex1, coord);
+	vec4 in_alpha = texture2D(tex2, coord);
+
+	float dist = 0.5 - in_alpha.r;
+	vec2 ddist = vec2(dFdx(dist), dFdy(dist));
+	float pixelDistance = dist / length(ddist);
+	float alpha = clamp(0.5 - pixelDistance, 0.0, 1.0);
+
+	gl_FragColor = vec4(in_color.rgb * alpha, alpha);
+}
+`);
+c3.compileShader(vert);
+c3.compileShader(frag);
+var prog = c3.createProgram();
+c3.attachShader(prog, vert);
+c3.attachShader(prog, frag);
+c3.linkProgram(prog);
+c3.useProgram(prog);
+var vbuf = new Int8Array([
+	0, 0, 0, 0,
+	0, 1, 0, 0,
+	1, 1, 0, 0,
+	1, 0, 0, 0,
+	0, 0, 0, 1,
+	0, 1, 0, 1,
+	1, 1, 0, 1,
+	1, 0, 0, 1,
+	0, 0, 1, 0,
+	0, 1, 1, 0,
+	1, 1, 1, 0,
+	1, 0, 1, 0,
+	0, 0, 1, 1,
+	0, 1, 1, 1,
+	1, 1, 1, 1,
+	1, 0, 1, 1,
+]);
+var ebuf = new Uint8Array([
+	0, 1, 2, 0, 2, 3,
+	4, 5, 6, 4, 6, 7,
+	8, 9, 10, 8, 10, 11,
+	12, 13, 14, 12, 14, 15,
+]);
+var va = c3.createBuffer();
+c3.bindBuffer(c3.ARRAY_BUFFER, va);
+c3.bufferData(c3.ARRAY_BUFFER, vbuf, c3.STATIC_DRAW);
+var ea = c3.createBuffer();
+c3.bindBuffer(c3.ELEMENT_ARRAY_BUFFER, ea);
+c3.bufferData(c3.ELEMENT_ARRAY_BUFFER, ebuf, c3.STATIC_DRAW);
+c3.enableVertexAttribArray(c3.getAttribLocation(prog, "in_coord"));
+c3.enableVertexAttribArray(c3.getAttribLocation(prog, "in_quadrant"));
+c3.vertexAttribPointer(c3.getAttribLocation(prog, "in_coord"), 2, c3.BYTE, false, 4, 0);
+c3.vertexAttribPointer(c3.getAttribLocation(prog, "in_quadrant"), 2, c3.BYTE, false, 4, 2);
+var tex1 = c3.createTexture();
+var tex2 = c3.createTexture();
+c3.uniform1i(c3.getUniformLocation(prog, "tex1"), 0);
+c3.uniform1i(c3.getUniformLocation(prog, "tex2"), 1);
+
+function updateSDF() {
+	c3.clear(c3.COLOR_BUFFER_BIT);
+	c3.activeTexture(c3.TEXTURE1);
+	c3.bindTexture(c3.TEXTURE_2D, tex2);
+	c3.texImage2D(c3.TEXTURE_2D, 0, c3.RGBA, c3.RGBA, c3.UNSIGNED_BYTE, c2.canvas);
+	c3.generateMipmap(c3.TEXTURE_2D);
+	c3.activeTexture(c3.TEXTURE0);
+	c3.bindTexture(c3.TEXTURE_2D, tex1);
+	c3.texImage2D(c3.TEXTURE_2D, 0, c3.RGBA, c3.RGBA, c3.UNSIGNED_BYTE, c1.canvas);
+	c3.generateMipmap(c3.TEXTURE_2D);
+	c3.drawElements(c3.TRIANGLES, 24, c3.UNSIGNED_BYTE, 0);
+}
+updateSDF();
+
+pan.addEventListener("mousemove", function(e) {
+	c3.canvas.style.left = (-e.offsetX * 3) + "px";
+	c3.canvas.style.top = (-e.offsetY * 3) + "px";
+});
+
+var mouseIsDown = null;
+c1.canvas.addEventListener("mousedown", function(e) {
+	e.preventDefault();
+	mouseIsDown = e;
+	requestAnimationFrame(drawOnTexture);
+});
+c2.canvas.addEventListener("mousedown", function(e) {
+	e.preventDefault();
+	mouseIsDown = e;
+	requestAnimationFrame(drawOnTexture);
+});
+c1.canvas.addEventListener("mousemove", function(e) {
+	if (mouseIsDown) {
+		mouseIsDown = e;
+	}
+});
+c2.canvas.addEventListener("mousemove", function(e) {
+	if (mouseIsDown) {
+		mouseIsDown = e;
+	}
+});
+addEventListener("mouseup", function(e) {
+	mouseIsDown = null;
+});
+
+function drawOnTexture() {
+	if (!mouseIsDown) {
+		return;
+	}
+
+	var ctx, brush;
+
+	if (mouseIsDown.target === c1.canvas) {
+		ctx = c1;
+		brush = ccolor.canvas;
+	} else if (mouseIsDown.target === c2.canvas) {
+		ctx = c2;
+		brush = calpha.canvas;
+	}
+
+	if (ctx) {
+		var centerX = mouseIsDown.offsetX;
+		var centerY = mouseIsDown.offsetY;
+		var minX = Math.floor(centerX / 128) * 128;
+		var minY = Math.floor(centerY / 128) * 128;
+		ctx.drawImage(
+			brush,
+			64 - centerX + minX,
+			64 - centerY + minY,
+			128,
+			128,
+			minX,
+			minY,
+			128,
+			128,
+		);
+
+		updateSDF();
+	}
+
+	requestAnimationFrame(drawOnTexture);
+}
+</script>
+</body>
+</html>
