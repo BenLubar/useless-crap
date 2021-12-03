@@ -160,7 +160,7 @@ async function doCountdown() {
 		setNum("msec", remaining, 1, 1e3, 3);
 		setNum("seconds", remaining, 1e3, 60, 2);
 		setNum("minutes", remaining, 60e3, 60, 2);
-		setNum("hours", remaining, 60 * 60e3, 24, 2);
+		setNum("hours", remaining, 60 * 60e3, args.has("hide-days") ? Infinity : 24, 2);
 		setNum("days", remaining, 24 * 60 * 60e3, Infinity, 1);
 		await nextFrame();
 	}
